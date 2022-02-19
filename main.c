@@ -152,23 +152,29 @@ int Command(char *input,char **P,char **W,int *pN,int *pWW,int *pWB,char *pWinne
         //showboard(P,*pN,*pWW,*pWB);
     }
     else if(strcmp(com,"playmove") == 0){
+        arg1 = strtok(NULL," \n");
+        arg2 = strtok(NULL," \n");
         if(arg1 == NULL || arg2 == NULL)                  //player and position are needed to execute the move
-            printf("? invalid syntax\n");
+            printf("? invalid syntax\n");//might need correction
         else{
             printf("=\nplaymove\n");
             //playmove(P,*pN,player,pos,pWinner);
         }
     }
     else if(strcmp(com,"playwall") == 0){
+        arg1 = strtok(NULL," \n");
+        arg2 = strtok(NULL," \n");
+        arg3 = strtok(NULL," \n");
         if(arg1 == NULL || arg2 == NULL || arg3 == NULL)   //player,position,and wall direction are neeeded to execute the move
-            printf("? invalid syntax\n\n");
+            printf("? invalid syntax\n\n");//might need correction
         else{
             printf("=\nplaywall\n");
             //playwall(P,*pN,pWW,pWB,player,pos,w_direction);
         }
     }
     else if(strcmp(com,"genmove") == 0){
-        if(arg1 == NULL)
+        arg1 = strtok(NULL," \n");
+        if(arg1 == NULL) //might need correction
             printf("? invalid syntax\n\n");
         else
             printf("genmove\n");                                       //genmove determines the "best move" and returns a string with
