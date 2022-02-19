@@ -1,3 +1,5 @@
+void undo(int,char **,char **,int,int *,int *,char *);
+void boardsize(char **,char **,int *,int *,int *);
 void showboard(char **,int,int,int);
 void playmove(char **,int,char *,char *,char *);
 void playwall(char **,int,int *,int *,char *,char *,char *);
