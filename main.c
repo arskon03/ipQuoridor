@@ -3,7 +3,7 @@
 #include <string.h>
 #include "Commands.h"
 
-int Command(char */*,char **,int,int *,int *,char **/);     //0 = proper execution, 1 = Panic situation
+int Command(char *,char **,int,int *,int *,char *);     //0 = proper execution, 1 = Panic situation
 
 int main(int argc,char **argv){         //board size and number of walls for each player
     int N,WW,WB,i,Panic;
