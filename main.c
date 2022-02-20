@@ -3,7 +3,7 @@
 #include <string.h>
 #include "Commands.h"
 
-int Command(char *,char **,char **,int *,int *,int *,char *);     //0 = proper execution, 1 = Panic situation
+int Command(char *input,element **A,int *pN,int *pWW,int *pWB,char *pWinner);     //0 = proper execution, 1 = Panic situation
 
 int main(int argc,char **argv){             //board size and number of walls for each player
     int N =9, WW = 10, WB = 10, i, Panic;
@@ -34,34 +34,36 @@ int main(int argc,char **argv){             //board size and number of walls for
         return 1;
     }*/
     printf("Dimension = %d\nWalls = %d\n",N,WW);              //TEST (CHECK)
-    A = malloc(N*sizeof(element));
-    if (P == NULL || W == NULL){
+    A = malloc(N*sizeof(element *));
+    if (A == NULL){
         printf("? Not enough memory!\n\n");
         return 1;
     }
     for (i = 0;i < N;i++){
-        P[i] = malloc(N*sizeof(char));
-        if(i < N-1) W[i] = malloc((N-1)*sizeof(char));
-        if (P[i] == NULL){
+        A[i] = malloc(N*sizeof(element));
+        //if(i < N-1) W[i] = malloc((N-1)*sizeof(char));
+        if (A[i] == NULL){
             printf("? Not enough memory!\n\n");
             return 1;
         }
-        for(int j = 0;j < N;j++){                      //Starting values of P
+        for(int j = 0;j < N;j++){                     //Starting values of P
             if(i == 0 && j == (int)(N/2)){
-                P[i][j] = 'B';
+                A[i][j].P = 'B';
             }
             else if(i == N-1 && j == (int)(N/2)){
-                P[i][j] = 'W';
+                A[i][j].P = 'W';
             }
-            else P[i][j] = ' ';
-            if(i < N-1 && j < N-1) W[i][j] == ' ';    //Starting values of W
+            else A[i][j].P = ' ';
+            A[i][j].w_or == ' ';                     //Starting values of w_or
+            A[i][j].V.x == 'A' + j;
+            A[i][j].V.y == N - i;
         }
     }
     char temp[30];                                   //temp will hold the preprocessed string according to the protocol
     while(Winner == '\0'){
         fgets(input,sizeof(input),stdin);
             for(int i = 0;i < 30;i++){         
-                if(input[i] >= 1 && input[i] <= 31 || input[i] == 127 ){
+                if(input[i] >= 1 && input[i] <= 31 || input[i] == 127){
                     if(input[i] == '\t'){
                         temp[i] = ' ';
                         continue;
@@ -77,21 +79,18 @@ int main(int argc,char **argv){             //board size and number of walls for
                 temp[i] = input[i];
             }   
         printf("%s\n",temp);                              //TEST (CHECK)
-        Panic = Command(temp,P,W,&N,&WW,&WB,&Winner);     //interprets command based on the given string 
+        Panic = Command(temp,A,&N,&WW,&WB,&Winner);       //interprets command based on the given string 
         if (Panic == 1 || Panic == -1) break;     
     }
     if (Panic == 1) return 1;
     if (Panic == -1) return 0;                            //user gave quit command
-    for(i = 0;i < N;i++){
-        free(P[i]);
-        free(W[i]);
-    }
-    free(P);
-    free(W);
+    for(i = 0;i < N;i++)
+        free(A[i]);
+    free(A);
     return 0;
 }
 
-int Command(char *input,char **P,char **W,int *pN,int *pWW,int *pWB,char *pWinner){
+int Command(char *input,element **A,int *pN,int *pWW,int *pWB,char *pWinner){
     char *com = NULL,*arg1 = NULL,*arg2 = NULL,*arg3 = NULL;  //tokens extracted from original string                                         
     com = strtok(input," \n");                                //\n is needed as a delimiter in order to be replaced by a \0
 
@@ -149,7 +148,7 @@ int Command(char *input,char **P,char **W,int *pN,int *pWW,int *pWB,char *pWinne
         int tempN = atoi(arg1);
         if(tempN > 0 && tempN <= 25 && tempN%2 == 1){
             printf("=\n\n");
-            //boardsize(P,W,pN,pWW,pWB);                     //board configuration/number of wall/game history = ARBITRARY
+            //boardsize(A,pN,pWW,pWB);                     //board configuration/number of wall/game history = ARBITRARY
         }
         else printf("? unacceptable size\n\n");
     }
@@ -157,7 +156,7 @@ int Command(char *input,char **P,char **W,int *pN,int *pWW,int *pWB,char *pWinne
     /* Command: clear_board */
     else if(strcmp(com,"clear_board") == 0){
         printf("=\n\n");
-        //clearboard(P,W,N,pWW,pWB);                           //players starting position-wallls arbitrary-game history empty
+        //clearboard(A,N,pWW,pWB);                           //players starting position-wallls arbitrary-game history empty
     }
 
     /* Command: walls */
@@ -174,7 +173,7 @@ int Command(char *input,char **P,char **W,int *pN,int *pWW,int *pWB,char *pWinne
     /* Command: showboard */
     else if(strcmp(com,"showboard") == 0){
         printf("=\nshowboard\n");
-        //showboard(P,W,*pN,*pWW,*pWB);
+        //showboard(A,*pN,*pWW,*pWB);
     }
 
     /* Command: playmove */
@@ -185,7 +184,7 @@ int Command(char *input,char **P,char **W,int *pN,int *pWW,int *pWB,char *pWinne
             printf("? invalid syntax\n");//might need correction
         else{
             printf("=\nplaymove\n");
-            //playmove(P,*pN,player,pos,pWinner);
+            //playmove(A,*pN,arg1,arg2,pWinner);
         }
     }
 
@@ -198,7 +197,7 @@ int Command(char *input,char **P,char **W,int *pN,int *pWW,int *pWB,char *pWinne
             printf("? invalid syntax\n\n");//might need correction
         else{
             printf("=\nplaywall\n");
-            //playwall(P,*pN,pWW,pWB,player,pos,w_direction);
+            //playwall(A,*pN,pWW,pWB,arg1,arg2,arg3);
         }
     }
 
@@ -209,7 +208,7 @@ int Command(char *input,char **P,char **W,int *pN,int *pWW,int *pWB,char *pWinne
             printf("? invalid syntax\n\n");
         else
             printf("=\ngenmove\n\n");                                       //genmove determines the "best move" and returns a string with
-            //Command(genmove(P,*pN,player,pWW,pWB),P,N,pWW,pWB,pWinner);  //the command that is passed on to a recursive call of the command function
+            //Command(genmove(A,*pN,arg1,pWW,pWB),A,pN,pWW,pWB,pWinner);    //the command that is passed on to a recursive call of the command function
     }
 
     /* Command: winner */
