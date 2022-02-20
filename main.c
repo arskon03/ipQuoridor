@@ -36,6 +36,7 @@ int main(int argc, char **argv){             //board size and number of walls fo
         return 1;
     }*/
     printf("Dimension = %d\nWalls = %d\n",N,WW);              //TEST (CHECK)
+    /*Initializing with default values*/
     A = malloc(N*sizeof(element *));
     if (A == NULL){
         printf("? Not enough memory!\n\n");
@@ -63,7 +64,8 @@ int main(int argc, char **argv){             //board size and number of walls fo
         }
         printf("\n");
     }
-    char temp[30];                                   //temp will hold the preprocessed string according to the protocol
+    char temp[30]; //temp will hold the preprocessed string according to the protocol
+    /*Preprocessing input before calling command function*/
     while(Winner == '\0'){
         fgets(input,sizeof(input),stdin);
             for(int i = 0;i < 30;i++){         
@@ -77,7 +79,7 @@ int main(int argc, char **argv){             //board size and number of walls fo
                     continue;
                 }
                 if(input[i] == '#'){
-                    temp[i] == '\0';                      //temp ends here so that everything after the '#' character is removed
+                    temp[i] == '\0';         //temp ends here so that everything after the '#' character is removed
                     break;
                 }
                 temp[i] = input[i];
@@ -87,7 +89,7 @@ int main(int argc, char **argv){             //board size and number of walls fo
         if (Panic == 1 || Panic == -1) break;     
     }
     if (Panic == 1) return 1;
-    if (Panic == -1) return 0;                            //user gave quit command
+    if (Panic == -1) return 0;  //user gave quit command
     for(i = 0;i < N;i++)
         free(A[i]);
     free(A);
