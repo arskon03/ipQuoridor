@@ -7,23 +7,23 @@ void showboard(element **A,int N,int WW,int WB){
     int i,j;
     for(i = 1;i <= (2*N + 3);i++){                      //board big enough to show all rows,collumns and the coordinates
         for(j = 1;j <= N+2;j++){ 
-            if(i == 1 || i == (2*N+3)){               //First and last line are always the coordinates
+            if(i == 1 || i == (2*N+3)){                 //First and last line are always the coordinates
                 if(j == 1 || j == N+2) printf("    ");
                 else printf(" %c  ", 'A'+(j-2));
             }
-            else if(i == 2 || i == (2*N+2)){          //second and second to last lines are always the same
+            else if(i == 2 || i == (2*N+2)){            //second and second to last lines are always the same
                 if (j == 1 ) printf("   +");
                 else if(j == N+2) printf("+   ");
                 else printf("---+");
             }
             else if(i%2 == 1){
-                if(j == 1) printf(" %d |",N-i+1);
-                else if(j == N+2) printf(" %d  ",N-i+1);
+                if(j == 1) printf(" %d |",N-(i/2)+1);
+                else if(j == N+2) printf(" %d  ",N-(i/2)+1);
                 else{
                     printf(" %c ",A[i][j].P);
                     if(i == 3) printf("%c", (A[(i-3)/2][j-2].w_or == 'V') ? 'H' : '|');
                     //printf 'H' instead of '|' for vertical wall if it exists
-                    else printf("%c", (A[(i-3)/2][j-2].w_or == 'V' || A[(i-3)/2-1][j-2].w_or == 'V') ? 'H' : '|');
+                    else printf("%c", (A[(i/2)-1][j-2].w_or == 'V' || A[(i/2)-2][j-2].w_or == 'V') ? 'H' : '|');
                 }
             }
             else{ //i%2 == 0
@@ -31,13 +31,13 @@ void showboard(element **A,int N,int WW,int WB){
                 else if(j == N+2) printf("+   ");
                 else if (j == 2){
                     for(int k = 1; k <= 3; k++)
-                        printf("%c",(A[(i-3)/2][j-2].w_or == 'H') ? '=' : '-');
-                    printf("%c",(A[(i-3)/2][j-2].w_or == 'H') ? '=' : '+');
+                        printf("%c",(A[(i/2)-2][j-2].w_or == 'H') ? '=' : '-');
+                    printf("%c",(A[(i/2)-2][j-2].w_or == 'H') ? '=' : '+');
                 } //printing '=' instead of '-' for horizontal wall if it exists
                 else{
                     for(int k = 1; k <= 3; k++)
-                        printf("%c",(A[(i-3)/2][j-2].w_or == 'H' || A[(i-3)/2-1][j-2].w_or == 'H') ? '=' : '-');
-                    printf("%c",(A[(i-3)/2][j-2].w_or == 'H') ? '=' : '+');
+                        printf("%c",(A[(i/2)-2][j-2].w_or == 'H' || A[(i/2)-2][j-3].w_or == 'H') ? '=' : '-');
+                    printf("%c",(A[(i/2)-2][j-2].w_or == 'H') ? '=' : '+');
                 }
             }
         }
