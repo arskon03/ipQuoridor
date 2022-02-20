@@ -5,6 +5,12 @@ void playmove(char **,int,char *,char *,char *);
 void playwall(char **,int,int *,int *,char *,char *,char *);
 char *genmove(char **,int,char *,int *,int *);
 
+typedef struct Element{
+    char P;            //values :'B'/'W'/' '
+    char w_or;         //values :'h'/'v'/' '
+    char *vertex       //values :"A3"/"B9" etc. = coordinates
+}element;
+
 /*typedef struct coord{
     char x;
     unsigned int y;

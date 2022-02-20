@@ -7,8 +7,9 @@ int Command(char *,char **,char **,int *,int *,int *,char *);     //0 = proper e
 
 int main(int argc,char **argv){             //board size and number of walls for each player
     int N =9, WW = 10, WB = 10, i, Panic;
-    char **P, **W, Winner = '\0', input[30];   //P = matrix with player positions(W,B) and blank characters everywhere else(INPUT NEEDS TO BE BIGGER)
-    /*if(argc == 1){                        //W = matrix with wall positions (H for horizontal,V for vertical) and blank characters everywhere else
+    char Winner = '\0', input[30];   //(INPUT NEEDS TO BE BIGGER)
+    element **A;                     //A will hold player positions/Wall positions/orientation and the coordinates as vertices
+    /*if(argc == 1){      
         N = 9;
         WW = WB = 10;
     }
@@ -33,8 +34,7 @@ int main(int argc,char **argv){             //board size and number of walls for
         return 1;
     }*/
     printf("Dimension = %d\nWalls = %d\n",N,WW);              //TEST (CHECK)
-    P = malloc(N*sizeof(char *));
-    W = malloc((N-1)*sizeof(char *));
+    A = malloc(N*sizeof(element));
     if (P == NULL || W == NULL){
         printf("? Not enough memory!\n\n");
         return 1;
