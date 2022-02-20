@@ -80,7 +80,7 @@ int main(int argc, char **argv){             //board size and number of walls fo
                 }
                 temp[i] = input[i];
             }   
-        printf("%s\n",temp);                              //TEST (CHECK)
+        //printf("%s\n",temp);                              //TEST (CHECK)
         Panic = Command(temp,A,&N,&WW,&WB,&Winner);       //interprets command based on the given string 
         if (Panic == 1 || Panic == -1) break;     
     }
@@ -174,8 +174,8 @@ int Command(char *input,element **A,int *pN,int *pWW,int *pWB,char *pWinner){
 
     /* Command: showboard */
     else if(strcmp(com,"showboard") == 0){
-        printf("=\nshowboard\n");
-        //showboard(A,*pN,*pWW,*pWB);
+        //printf("=\nshowboard\n");
+        showboard(A,*pN,*pWW,*pWB);
     }
 
     /* Command: playmove */
