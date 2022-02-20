@@ -88,7 +88,7 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, char***
     if (strlen(pos) > 3)
     {
         printf("? illegal move\n\n");
-        return;
+        return 0;
     }
     char move[10];
 
@@ -107,7 +107,7 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, char***
     if (p == 'E')
     {
         printf("? invalid syntax\n\n");
-        return;
+        return 0;
     }
     
     // Find the position in the matrix the move is at
