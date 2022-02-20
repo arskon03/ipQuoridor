@@ -6,8 +6,8 @@
 int Command(char *,char **,char **,int *,int *,int *,char *);     //0 = proper execution, 1 = Panic situation
 
 int main(int argc,char **argv){             //board size and number of walls for each player
-    int N =9,WW = 10,WB = 10,i,Panic;
-    char **P,**W,Winner = '\0',input[30];   //P = matrix with player positions(W,B) and blank characters everywhere else(INPUT NEEDS TO BE BIGGER)
+    int N =9, WW = 10, WB = 10, i, Panic;
+    char **P, **W, Winner = '\0', input[30];   //P = matrix with player positions(W,B) and blank characters everywhere else(INPUT NEEDS TO BE BIGGER)
     /*if(argc == 1){                        //W = matrix with wall positions (H for horizontal,V for vertical) and blank characters everywhere else
         N = 9;
         WW = WB = 10;
@@ -94,6 +94,8 @@ int main(int argc,char **argv){             //board size and number of walls for
 int Command(char *input,char **P,char **W,int *pN,int *pWW,int *pWB,char *pWinner){
     char *com = NULL,*arg1 = NULL,*arg2 = NULL,*arg3 = NULL;  //tokens extracted from original string                                         
     com = strtok(input," \n");                                //\n is needed as a delimiter in order to be replaced by a \0
+
+    /* Command: name */
     if(strcmp(com,"name") == 0) printf("= sdi2100083\n\n");
     else if (strcmp(com,"known_command") == 0){ //ALWAYS TRUE
         arg1 = strtok(NULL," \n");
@@ -111,14 +113,20 @@ int Command(char *input,char **P,char **W,int *pN,int *pWW,int *pWB,char *pWinne
             printf("= true\n\n");
         else printf("? false\n\n");
     }
+
+    /* Command: list_commands */
     else if(strcmp(com,"list_commands") == 0){
         printf("=\nname\nknown_command\nlist_commands\nquit\nboardsize\n");
         printf("clear_board\nwalls\nplaymove\nplaywall\ngenmove\nundo\nwinner\nshowboard\n\n");
     }
+
+    /* Command: quit */
     else if(strcmp(com,"quit") == 0){
         printf("=\n\n");
         return -1;
     }
+
+    /* Command: undo */
     else if(strcmp(com,"undo") == 0){
         arg1 = strtok(NULL,input);
         int times = atoi(arg1);
@@ -128,8 +136,10 @@ int Command(char *input,char **P,char **W,int *pN,int *pWW,int *pWB,char *pWinne
             printf("=\n\n");
             undo(times,P,W,N,pWW,pWB,pWinner);              //not sure about parameters
         }
-        else printf("? cannot do\n\n");*/            
+        else printf("? cannot undo\n\n");*/            
     }
+
+    /* Command: boardsize */
     else if(strcmp(com,"boardsize") == 0){
         arg1 = strtok(NULL," \n");
         if(arg1 == NULL){ 
@@ -143,10 +153,14 @@ int Command(char *input,char **P,char **W,int *pN,int *pWW,int *pWB,char *pWinne
         }
         else printf("? unacceptable size\n\n");
     }
+
+    /* Command: clear_board */
     else if(strcmp(com,"clear_board") == 0){
         printf("=\n\n");
         //clearboard(P,W,N,pWW,pWB);                           //players starting position-wallls arbitrary-game history empty
     }
+
+    /* Command: walls */
     else if(strcmp(com,"walls") == 0){
         arg1 = strtok(NULL," \n");
         if(arg1 == NULL){
@@ -156,10 +170,14 @@ int Command(char *input,char **P,char **W,int *pN,int *pWW,int *pWB,char *pWinne
         *pWW = *pWB = atoi(arg1);
         printf("=\n\n");
     }
+
+    /* Command: showboard */
     else if(strcmp(com,"showboard") == 0){
         printf("=\nshowboard\n");
         //showboard(P,W,*pN,*pWW,*pWB);
     }
+
+    /* Command: playmove */
     else if(strcmp(com,"playmove") == 0){
         arg1 = strtok(NULL," \n");
         arg2 = strtok(NULL," \n");
@@ -170,6 +188,8 @@ int Command(char *input,char **P,char **W,int *pN,int *pWW,int *pWB,char *pWinne
             //playmove(P,*pN,player,pos,pWinner);
         }
     }
+
+    /* Command: playwall */
     else if(strcmp(com,"playwall") == 0){
         arg1 = strtok(NULL," \n");
         arg2 = strtok(NULL," \n");
@@ -181,6 +201,8 @@ int Command(char *input,char **P,char **W,int *pN,int *pWW,int *pWB,char *pWinne
             //playwall(P,*pN,pWW,pWB,player,pos,w_direction);
         }
     }
+
+    /* Command: genmove */
     else if(strcmp(com,"genmove") == 0){
         arg1 = strtok(NULL," \n");
         if(arg1 == NULL) //might need correction
@@ -189,6 +211,8 @@ int Command(char *input,char **P,char **W,int *pN,int *pWW,int *pWB,char *pWinne
             printf("=\ngenmove\n\n");                                       //genmove determines the "best move" and returns a string with
             //Command(genmove(P,*pN,player,pWW,pWB),P,N,pWW,pWB,pWinner);  //the command that is passed on to a recursive call of the command function
     }
+
+    /* Command: winner */
     else if(strcmp(com,"winner") == 0){
         if(*pWinner == 'B') printf("= true black\n\n");
         else if(*pWinner == 'W') printf("= true white\n\n");
