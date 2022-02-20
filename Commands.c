@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "Commands.h"
 
-void showboard(char **P,char **W,int N,int WA,int WB){
+void showboard(element **A,int N,int WA,int WB){
     int i,j;
     for(i = 1;i <= (2*N + 3);i++){                      //board big enough to show all rows,collumns and the coordinates
         for(j = 1;j <= N+2;j++){ 
@@ -18,7 +18,7 @@ void showboard(char **P,char **W,int N,int WA,int WB){
                 if(j == 1) printf(" %d |",N-i+1);
                 else if(j == N+2) printf(" %d  ",N-i+1);
                 else{
-                    printf(" %c ",P[i][j]);
+                    printf(" %c ",A[i][j].P);
                 }
             }
             else{ //i%2 == 0
