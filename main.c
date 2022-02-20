@@ -7,7 +7,7 @@ int Command(char *,char **,char **,int *,int *,int *,char *);     //0 = proper e
 
 int main(int argc,char **argv){             //board size and number of walls for each player
     int N =9,WW = 10,WB = 10,i,Panic;
-    char **P,**W,Winner = '\0',input[30];   //P = matrix with player positions(W,B) and blank characters everywhere else
+    char **P,**W,Winner = '\0',input[30];   //P = matrix with player positions(W,B) and blank characters everywhere else(INPUT NEEDS TO BE BIGGER)
     /*if(argc == 1){                        //W = matrix with wall positions (H for horizontal,V for vertical) and blank characters everywhere else
         N = 9;
         WW = WB = 10;
@@ -107,7 +107,7 @@ int Command(char *input,char **P,char **W,int *pN,int *pWW,int *pWB,char *pWinne
             printf("= true\n\n");
         else if(strcmp(arg1,"playwall") == 0 || strcmp(arg1,"genmove") == 0)
             printf("= true\n\n");
-        else if(strcmp(arg1,"undo") == 0 || strcmp(arg1,"winner") == 0 || strcmp(arg1,"showboard"))
+        else if(strcmp(arg1,"undo") == 0 || strcmp(arg1,"winner") == 0 || strcmp(arg1,"showboard") == 0)
             printf("= true\n\n");
         else printf("? false\n\n");
     }
@@ -158,7 +158,7 @@ int Command(char *input,char **P,char **W,int *pN,int *pWW,int *pWB,char *pWinne
     }
     else if(strcmp(com,"showboard") == 0){
         printf("=\nshowboard\n");
-        //showboard(P,*pN,*pWW,*pWB);
+        //showboard(P,W,*pN,*pWW,*pWB);
     }
     else if(strcmp(com,"playmove") == 0){
         arg1 = strtok(NULL," \n");
