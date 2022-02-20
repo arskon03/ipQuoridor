@@ -3,10 +3,10 @@
 #include <string.h>
 #include "Commands.h"
 
-int Command(char *input,element **A,int *pN,int *pWW,int *pWB,char *pWinner);     //0 = proper execution, 1 = Panic situation
+int Command(char *input, element **A, int *pN, int *pWW, int *pWB, char *pWinner);     //0 = proper execution, 1 = Panic situation
 
-int main(int argc,char **argv){             //board size and number of walls for each player
-    int N =9, WW = 10, WB = 10, i, Panic;
+int main(int argc, char **argv){             //board size and number of walls for each player
+    int N = 9, WW = 10, WB = 10, i, Panic;
     char Winner = '\0', input[30];   //(INPUT NEEDS TO BE BIGGER)
     element **A;                     //A will hold player positions/Wall positions/orientation and the coordinates as vertices
     /*if(argc == 1){      
