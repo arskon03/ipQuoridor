@@ -6,7 +6,7 @@
 int Command(char *,char **,char **,int *,int *,int *,char *);     //0 = proper execution, 1 = Panic situation
 
 int main(int argc,char **argv){             //board size and number of walls for each player
-    int N,WW,WB,i,Panic;
+    int N =9,WW = 10,WB = 10,i,Panic;
     char **P,**W,Winner = '\0',input[30];   //P = matrix with player positions(W,B) and blank characters everywhere else
     /*if(argc == 1){                        //W = matrix with wall positions (H for horizontal,V for vertical) and blank characters everywhere else
         N = 9;
@@ -57,7 +57,7 @@ int main(int argc,char **argv){             //board size and number of walls for
             if(i < N-1 && j < N-1) W[i][j] == ' ';    //Starting values of W
         }
     }
-    char* temp[30];                                   //temp will hold the preprocessed string according to the protocol
+    char temp[30];                                   //temp will hold the preprocessed string according to the protocol
     while(Winner == '\0'){
         fgets(input,sizeof(input),stdin);
             for(int i = 0;i < 30;i++){         
@@ -94,8 +94,8 @@ int main(int argc,char **argv){             //board size and number of walls for
 int Command(char *input,char **P,char **W,int *pN,int *pWW,int *pWB,char *pWinner){
     char *com = NULL,*arg1 = NULL,*arg2 = NULL,*arg3 = NULL;  //tokens extracted from original string                                         
     com = strtok(input," \n");                                //\n is needed as a delimiter in order to be replaced by a \0
-    if(strcmp(com,"name") == 0) printf("= sdi2100083");
-    else if (strcmp(com,"known_command") == 0){
+    if(strcmp(com,"name") == 0) printf("= sdi2100083\n\n");
+    else if (strcmp(com,"known_command") == 0){ //ALWAYS TRUE
         arg1 = strtok(NULL," \n");
         if (strcmp(arg1,"name") == 0 || strcmp(arg1,"known_command") == 0)
             printf("= true\n\n");
@@ -122,6 +122,7 @@ int Command(char *input,char **P,char **W,int *pN,int *pWW,int *pWB,char *pWinne
     else if(strcmp(com,"undo") == 0){
         arg1 = strtok(NULL,input);
         int times = atoi(arg1);
+        printf("=\nundo %d\n\n",times);                     //TEST 
         /*if(times <= 0) printf("=\n\n");
         else if (times <= MP){                              //MP = moves played
             printf("=\n\n");
@@ -131,9 +132,13 @@ int Command(char *input,char **P,char **W,int *pN,int *pWW,int *pWB,char *pWinne
     }
     else if(strcmp(com,"boardsize") == 0){
         arg1 = strtok(NULL," \n");
+        if(arg1 == NULL){ 
+            printf("? invalid syntax\n\n");
+            return 0;
+        }
         int tempN = atoi(arg1);
         if(tempN > 0 && tempN <= 25 && tempN%2 == 1){
-            pritnf("=\n\n");
+            printf("=\n\n");
             //boardsize(P,W,pN,pWW,pWB);                     //board configuration/number of wall/game history = ARBITRARY
         }
         else printf("? unacceptable size\n\n");
@@ -144,6 +149,10 @@ int Command(char *input,char **P,char **W,int *pN,int *pWW,int *pWB,char *pWinne
     }
     else if(strcmp(com,"walls") == 0){
         arg1 = strtok(NULL," \n");
+        if(arg1 == NULL){
+            printf("? invalid syntax\n\n");
+            return 0;
+        }
         *pWW = *pWB = atoi(arg1);
         printf("=\n\n");
     }
@@ -177,7 +186,7 @@ int Command(char *input,char **P,char **W,int *pN,int *pWW,int *pWB,char *pWinne
         if(arg1 == NULL) //might need correction
             printf("? invalid syntax\n\n");
         else
-            printf("genmove\n");                                       //genmove determines the "best move" and returns a string with
+            printf("=\ngenmove\n\n");                                       //genmove determines the "best move" and returns a string with
             //Command(genmove(P,*pN,player,pWW,pWB),P,N,pWW,pWB,pWinner);  //the command that is passed on to a recursive call of the command function
     }
     else if(strcmp(com,"winner") == 0){
