@@ -6,9 +6,10 @@
 int Command(char *,char **,char **,int *,int *,int *,char *);     //0 = proper execution, 1 = Panic situation
 
 int main(int argc,char **argv){             //board size and number of walls for each player
-    int N =9,WW = 10,WB = 10,i,Panic;
-    char **P,**W,Winner = '\0',input[30];   //P = matrix with player positions(W,B) and blank characters everywhere else(INPUT NEEDS TO BE BIGGER)
-    /*if(argc == 1){                        //W = matrix with wall positions (H for horizontal,V for vertical) and blank characters everywhere else
+    int N = 9,WW = 10,WB = 10,i,Panic;
+    char Winner = '\0',input[30];   //(INPUT NEEDS TO BE BIGGER)
+    element **A;                    //A will hold player positions/Wall positions/orientation and the coordinates
+    /*if(argc == 1){                        
         N = 9;
         WW = WB = 10;
     }

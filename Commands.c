@@ -22,7 +22,8 @@ void showboard(char **P,char **W,int N,int WA,int WB){
                 }
             }
             else{ //i%2 == 0
-                
+                if(j == 1) printf("   +");
+                else if(j == N+2) printf("+   ");
             }
         }
         printf("\n");
