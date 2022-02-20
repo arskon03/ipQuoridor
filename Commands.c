@@ -13,14 +13,14 @@ void showboard(element **A,int N,int WW,int WB){
             }
             else if(i == 2 || i == (2*N+2)){            //second and second to last lines are always the same
                 if (j == 1 ) printf("   +");
-                else if(j == N+2) printf("+   ");
+                else if(j == N+2) printf("    ");
                 else printf("---+");
             }
             else if(i%2 == 1){
                 if(j == 1) printf(" %d |",N-(i/2)+1);
                 else if(j == N+2) printf(" %d  ",N-(i/2)+1);
                 else{
-                    printf(" %c ",A[i][j].P);
+                    printf(" %c ",A[(i-3)/2][j-2].P);
                     if(i == 3) printf("%c", (A[(i-3)/2][j-2].w_or == 'V') ? 'H' : '|');
                     //printf 'H' instead of '|' for vertical wall if it exists
                     else printf("%c", (A[(i/2)-1][j-2].w_or == 'V' || A[(i/2)-2][j-2].w_or == 'V') ? 'H' : '|');
@@ -28,7 +28,7 @@ void showboard(element **A,int N,int WW,int WB){
             }
             else{ //i%2 == 0
                 if(j == 1) printf("   +");
-                else if(j == N+2) printf("+   ");
+                else if(j == N+2) printf("    ");
                 else if (j == 2){
                     for(int k = 1; k <= 3; k++)
                         printf("%c",(A[(i/2)-2][j-2].w_or == 'H') ? '=' : '-');

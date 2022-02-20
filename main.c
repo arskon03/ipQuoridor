@@ -56,10 +56,12 @@ int main(int argc, char **argv){             //board size and number of walls fo
                 A[i][j].P = 'W';
             }
             else A[i][j].P = ' ';
-            A[i][j].w_or == ' ';                     //Starting values of w_or
-            A[i][j].V.x == 'A' + j;
-            A[i][j].V.y == N - i;
+            A[i][j].w_or = ' ';                     //Starting values of w_or
+            A[i][j].V.x = 'A' + j;
+            A[i][j].V.y = N - i;
+            printf("%c %c %c %d\t",A[i][j].P,A[i][j].w_or,A[i][j].V.x,A[i][j].V.y);
         }
+        printf("\n");
     }
     char temp[30];                                   //temp will hold the preprocessed string according to the protocol
     while(Winner == '\0'){
