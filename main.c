@@ -3,12 +3,12 @@
 #include <string.h>
 #include "Commands.h"
 
-int Command(char *input,element **A,int *pN,int *pWW,int *pWB,char *pWinner);     //0 = proper execution, 1 = Panic situation
+int Command(char *input, element ***A, int *pN, int *pWW, int *pWB, char *pWinner,char ***history,int *hSize);     //0 = proper execution, 1 = Panic situation
 
-int main(int argc,char **argv){             //board size and number of walls for each player
-    int N =9, WW = 10, WB = 10, i, Panic;
-    char Winner = '\0', input[30];   //(INPUT NEEDS TO BE BIGGER)
-    element **A;                     //A will hold player positions/Wall positions/orientation and the coordinates as vertices
+int main(int argc, char **argv){             //board size and number of walls for each player
+    int N = 0, WW, WB = 10, i, Panic = 0,hSize;
+    char Winner = '\0', **history = NULL, input[30];   //(INPUT NEEDS TO BE BIGGER), history is NULL so clearboard can free it
+    element **A = NULL;                     //A will hold player positions/Wall positions/orientation and the coordinates as vertices
     /*if(argc == 1){      
         N = 9;
         WW = WB = 10;
@@ -33,8 +33,15 @@ int main(int argc,char **argv){             //board size and number of walls for
         printf("Program Usage: ./ipquoridor -<size> -<walls>");
         return 1;
     }*/
-    printf("Dimension = %d\nWalls = %d\n",N,WW);              //TEST (CHECK)
-    A = malloc(N*sizeof(element *));
+    /*Initializing with default values*/
+    Panic = boardsize(&A,9,&N);
+    if(Panic == 1){ //malloc failed
+        printf("? Not enough memory!\n\n");
+        return 1;
+    }
+    clearboard(A,N,&history,&hSize);
+    WW = WB = 10;
+    /*A = malloc(N*sizeof(element *));
     if (A == NULL){
         printf("? Not enough memory!\n\n");
         return 1;
@@ -54,13 +61,18 @@ int main(int argc,char **argv){             //board size and number of walls for
                 A[i][j].P = 'W';
             }
             else A[i][j].P = ' ';
-            A[i][j].w_or == ' ';                     //Starting values of w_or
-            A[i][j].V.x == 'A' + j;
-            A[i][j].V.y == N - i;
+            A[i][j].w_or = ' ';                     //Starting values of w_or
+            A[i][j].V.x = 'A' + j;
+            A[i][j].V.y = N - i;
+            printf("%c %c %c %d\t",A[i][j].P,A[i][j].w_or,A[i][j].V.x,A[i][j].V.y);
         }
+        printf("\n");
     }
-    char temp[30];                                   //temp will hold the preprocessed string according to the protocol
-    while(Winner == '\0'){
+    int hSize = 0;
+    char **history = NULL;*/
+    char temp[30]; //temp will hold the preprocessed string according to the protocol
+    /*Preprocessing input before calling command function*/
+    while(Panic == 0){ //loop until Panic or quit command
         fgets(input,sizeof(input),stdin);
             for(int i = 0;i < 30;i++){         
                 if(input[i] >= 1 && input[i] <= 31 || input[i] == 127){
@@ -73,24 +85,24 @@ int main(int argc,char **argv){             //board size and number of walls for
                     continue;
                 }
                 if(input[i] == '#'){
-                    temp[i] == '\0';                      //temp ends here so that everything after the '#' character is removed
+                    temp[i] == '\0';         //temp ends here so that everything after the '#' character is removed
                     break;
                 }
                 temp[i] = input[i];
             }   
-        printf("%s\n",temp);                              //TEST (CHECK)
-        Panic = Command(temp,A,&N,&WW,&WB,&Winner);       //interprets command based on the given string 
-        if (Panic == 1 || Panic == -1) break;     
+        //printf("%s\n",temp);                              //TEST (CHECK)
+        Panic = Command(temp,&A,&N,&WW,&WB,&Winner,&history,&hSize);       //interprets command based on the given string 
+        //if (Panic == 1 || Panic == -1) break;
     }
     if (Panic == 1) return 1;
-    if (Panic == -1) return 0;                            //user gave quit command
+    if (Panic == -1) return 0;  //user gave quit command
     for(i = 0;i < N;i++)
         free(A[i]);
     free(A);
     return 0;
 }
 
-int Command(char *input,element **A,int *pN,int *pWW,int *pWB,char *pWinner){
+int Command(char *input,element ***A,int *pN,int *pWW,int *pWB,char *pWinner,char ***history,int *hSize){
     char *com = NULL,*arg1 = NULL,*arg2 = NULL,*arg3 = NULL;  //tokens extracted from original string                                         
     com = strtok(input," \n");                                //\n is needed as a delimiter in order to be replaced by a \0
 
@@ -147,8 +159,9 @@ int Command(char *input,element **A,int *pN,int *pWW,int *pWB,char *pWinner){
         }
         int tempN = atoi(arg1);
         if(tempN > 0 && tempN <= 25 && tempN%2 == 1){
+            int P = boardsize(A,tempN,pN);  //board configuration/number of wall/game history = ARBITRARY
+            if(P == 1) return 1;             //malloc failed (PANIC)
             printf("=\n\n");
-            //boardsize(A,pN,pWW,pWB);                     //board configuration/number of wall/game history = ARBITRARY
         }
         else printf("? unacceptable size\n\n");
     }
@@ -156,7 +169,7 @@ int Command(char *input,element **A,int *pN,int *pWW,int *pWB,char *pWinner){
     /* Command: clear_board */
     else if(strcmp(com,"clear_board") == 0){
         printf("=\n\n");
-        //clearboard(A,N,pWW,pWB);                           //players starting position-wallls arbitrary-game history empty
+        clearboard(*A,*pN,history,hSize);     //players starting position-walls arbitrary-game history empty
     }
 
     /* Command: walls */
@@ -172,19 +185,19 @@ int Command(char *input,element **A,int *pN,int *pWW,int *pWB,char *pWinner){
 
     /* Command: showboard */
     else if(strcmp(com,"showboard") == 0){
-        printf("=\nshowboard\n");
-        //showboard(A,*pN,*pWW,*pWB);
+        printf("=\n");
+        showboard(*A,*pN,*pWW,*pWB);
     }
 
     /* Command: playmove */
     else if(strcmp(com,"playmove") == 0){
         arg1 = strtok(NULL," \n");
         arg2 = strtok(NULL," \n");
-        if(arg1 == NULL || arg2 == NULL)                  //player and position are needed to execute the move
-            printf("? invalid syntax\n");//might need correction
+        if(arg1 == NULL || arg2 == NULL)               //player and position are needed to execute the move
+            printf("? invalid syntax\n");              //might need correction
         else{
-            printf("=\nplaymove\n");
-            //playmove(A,*pN,arg1,arg2,pWinner);
+            //printf("=\nplaymove\n");
+            playmove(*A,*pN,arg1,arg2,pWinner,history,hSize);
         }
     }
 
@@ -196,8 +209,8 @@ int Command(char *input,element **A,int *pN,int *pWW,int *pWB,char *pWinner){
         if(arg1 == NULL || arg2 == NULL || arg3 == NULL)   //player,position,and wall direction are neeeded to execute the move
             printf("? invalid syntax\n\n");//might need correction
         else{
-            printf("=\nplaywall\n");
-            //playwall(A,*pN,pWW,pWB,arg1,arg2,arg3);
+            int P = playwall(A,*pN,pWW,pWB,arg1,arg2,arg3,history,hSize);
+            if(P == 1) return 1;     //malloc failed (PANIC)
         }
     }
 
