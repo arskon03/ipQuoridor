@@ -3,7 +3,7 @@
 #include <string.h>
 #include "Commands.h"
 
-int Command(char *input, element **A, int *pN, int *pWW, int *pWB, char *pWinner,char ***history,int *hSize);     //0 = proper execution, 1 = Panic situation
+int Command(char *input, element ***A, int *pN, int *pWW, int *pWB, char *pWinner,char ***history,int *hSize);     //0 = proper execution, 1 = Panic situation
 
 int main(int argc, char **argv){             //board size and number of walls for each player
     int N = 0, WW, WB = 10, i, Panic = 0,hSize;
@@ -91,7 +91,7 @@ int main(int argc, char **argv){             //board size and number of walls fo
                 temp[i] = input[i];
             }   
         //printf("%s\n",temp);                              //TEST (CHECK)
-        Panic = Command(temp,A,&N,&WW,&WB,&Winner,&history,&hSize);       //interprets command based on the given string 
+        Panic = Command(temp,&A,&N,&WW,&WB,&Winner,&history,&hSize);       //interprets command based on the given string 
         //if (Panic == 1 || Panic == -1) break;
     }
     if (Panic == 1) return 1;
@@ -102,7 +102,7 @@ int main(int argc, char **argv){             //board size and number of walls fo
     return 0;
 }
 
-int Command(char *input,element **A,int *pN,int *pWW,int *pWB,char *pWinner,char ***history,int *hSize){
+int Command(char *input,element ***A,int *pN,int *pWW,int *pWB,char *pWinner,char ***history,int *hSize){
     char *com = NULL,*arg1 = NULL,*arg2 = NULL,*arg3 = NULL;  //tokens extracted from original string                                         
     com = strtok(input," \n");                                //\n is needed as a delimiter in order to be replaced by a \0
 
@@ -159,7 +159,7 @@ int Command(char *input,element **A,int *pN,int *pWW,int *pWB,char *pWinner,char
         }
         int tempN = atoi(arg1);
         if(tempN > 0 && tempN <= 25 && tempN%2 == 1){
-            int P = boardsize(&A,tempN,pN);  //board configuration/number of wall/game history = ARBITRARY
+            int P = boardsize(A,tempN,pN);  //board configuration/number of wall/game history = ARBITRARY
             if(P == 1) return 1;             //malloc failed (PANIC)
             printf("=\n\n");
         }
@@ -169,7 +169,7 @@ int Command(char *input,element **A,int *pN,int *pWW,int *pWB,char *pWinner,char
     /* Command: clear_board */
     else if(strcmp(com,"clear_board") == 0){
         printf("=\n\n");
-        clearboard(A,*pN,history,hSize);     //players starting position-walls arbitrary-game history empty
+        clearboard(*A,*pN,history,hSize);     //players starting position-walls arbitrary-game history empty
     }
 
     /* Command: walls */
@@ -186,18 +186,18 @@ int Command(char *input,element **A,int *pN,int *pWW,int *pWB,char *pWinner,char
     /* Command: showboard */
     else if(strcmp(com,"showboard") == 0){
         printf("=\n");
-        showboard(A,*pN,*pWW,*pWB);
+        showboard(*A,*pN,*pWW,*pWB);
     }
 
     /* Command: playmove */
     else if(strcmp(com,"playmove") == 0){
         arg1 = strtok(NULL," \n");
         arg2 = strtok(NULL," \n");
-        if(arg1 == NULL || arg2 == NULL)                  //player and position are needed to execute the move
-            printf("? invalid syntax\n");//might need correction
+        if(arg1 == NULL || arg2 == NULL)               //player and position are needed to execute the move
+            printf("? invalid syntax\n");              //might need correction
         else{
             //printf("=\nplaymove\n");
-            playmove(A,*pN,arg1,arg2,pWinner,history,hSize);
+            playmove(*A,*pN,arg1,arg2,pWinner,history,hSize);
         }
     }
 
