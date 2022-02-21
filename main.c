@@ -3,7 +3,7 @@
 #include <string.h>
 #include "Commands.h"
 
-int Command(char *input, element **A, int *pN, int *pWW, int *pWB, char *pWinner);     //0 = proper execution, 1 = Panic situation
+int Command(char *input, element **A, int *pN, int *pWW, int *pWB, char *pWinner,char ***history,int *hSize);     //0 = proper execution, 1 = Panic situation
 
 int main(int argc, char **argv){             //board size and number of walls for each player
     int N = 9, WW = 10, WB = 10, i, Panic;
@@ -64,6 +64,8 @@ int main(int argc, char **argv){             //board size and number of walls fo
         }
         printf("\n");
     }
+    int hSize = 0;
+    char **history;
     char temp[30]; //temp will hold the preprocessed string according to the protocol
     /*Preprocessing input before calling command function*/
     while(Winner == '\0'){
@@ -85,8 +87,8 @@ int main(int argc, char **argv){             //board size and number of walls fo
                 temp[i] = input[i];
             }   
         //printf("%s\n",temp);                              //TEST (CHECK)
-        Panic = Command(temp,A,&N,&WW,&WB,&Winner);       //interprets command based on the given string 
-        if (Panic == 1 || Panic == -1) break;     
+        Panic = Command(temp,A,&N,&WW,&WB,&Winner,&history,&hSize);       //interprets command based on the given string 
+        if (Panic == 1 || Panic == -1) break;
     }
     if (Panic == 1) return 1;
     if (Panic == -1) return 0;  //user gave quit command
@@ -96,7 +98,7 @@ int main(int argc, char **argv){             //board size and number of walls fo
     return 0;
 }
 
-int Command(char *input,element **A,int *pN,int *pWW,int *pWB,char *pWinner){
+int Command(char *input,element **A,int *pN,int *pWW,int *pWB,char *pWinner,char ***history,int *hSize){
     char *com = NULL,*arg1 = NULL,*arg2 = NULL,*arg3 = NULL;  //tokens extracted from original string                                         
     com = strtok(input," \n");                                //\n is needed as a delimiter in order to be replaced by a \0
 
@@ -189,8 +191,8 @@ int Command(char *input,element **A,int *pN,int *pWW,int *pWB,char *pWinner){
         if(arg1 == NULL || arg2 == NULL)                  //player and position are needed to execute the move
             printf("? invalid syntax\n");//might need correction
         else{
-            printf("=\nplaymove\n");
-            //playmove(A,*pN,arg1,arg2,pWinner);
+            //printf("=\nplaymove\n");
+            playmove(A,*pN,arg1,arg2,pWinner,&history,hSize);
         }
     }
 
