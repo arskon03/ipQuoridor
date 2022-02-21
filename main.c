@@ -192,7 +192,7 @@ int Command(char *input,element **A,int *pN,int *pWW,int *pWB,char *pWinner,char
             printf("? invalid syntax\n");//might need correction
         else{
             //printf("=\nplaymove\n");
-            playmove(A,*pN,arg1,arg2,pWinner,&history,hSize);
+            playmove(A,*pN,arg1,arg2,pWinner,history,hSize);
         }
     }
 

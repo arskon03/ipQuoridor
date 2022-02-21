@@ -188,5 +188,7 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, char***
         *history = temp;
     }
 
+    printf("=\n\n");
+
     return 0;
 }
