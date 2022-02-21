@@ -76,7 +76,7 @@ void clearboard(element **A, int N, char ***history, int *hSize){
     int i,j;
     for(i = 0;i < N;i++)
         for(j = 0;j < N;j++){
-            A[i][j].P = 'g';
+            //(*A)[i][j].P = 'g';
             if(i == 0 && j == (int)(N/2))        //black starting position
                 A[i][j].P = 'B';
             else if(i == N-1 && j == (int)(N/2)) //white starting position
