@@ -48,7 +48,7 @@ void showboard(element **A,int N,int WW,int WB){
     printf("\n\n");
 }
 
-// Convert a string to all lowercase USELESS BULLSHIT
+// Convert a string to all lowercase
 char* toLow(char* string)
 {
     int size = strlen(string);
@@ -65,6 +65,24 @@ char* toLow(char* string)
         }
 
     return low;
+}
+// Convert a string to all lowercase
+char* toUpper(char* string)
+{
+    int size = strlen(string);
+    char* cap = malloc((sizeof(char) * size + 1));
+
+    if (cap != NULL)
+        for(int i = 0; i < size + 1; i++)
+        {
+            char new = string[i];
+            if (new >= 'a' && new <= 'z')
+                new -= 'a' - 'A';
+
+            cap[i] = new;
+        }
+
+    return cap;
 }
 
 // Convert array coordinates to vertex coordinates
@@ -109,10 +127,13 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, char***
         printf("? invalid syntax\n\n");
         return 0;
     }
+    free(playerBuff);
     
     // Find the position in the matrix the move is at
     vertex v;
-    v.x = pos[0];
+    char* temp = toUpper(pos);
+    v.x = temp[0];
+    free(temp);
 
     char numbers[3];
     int i, j;
