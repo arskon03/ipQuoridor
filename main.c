@@ -72,7 +72,7 @@ int main(int argc, char **argv){             //board size and number of walls fo
     char **history = NULL;*/
     char temp[30]; //temp will hold the preprocessed string according to the protocol
     /*Preprocessing input before calling command function*/
-    while(Panic == 0){
+    while(Panic == 0){ //loop until Panic or quit command
         fgets(input,sizeof(input),stdin);
             for(int i = 0;i < 30;i++){         
                 if(input[i] >= 1 && input[i] <= 31 || input[i] == 127){
@@ -209,9 +209,8 @@ int Command(char *input,element ***A,int *pN,int *pWW,int *pWB,char *pWinner,cha
         if(arg1 == NULL || arg2 == NULL || arg3 == NULL)   //player,position,and wall direction are neeeded to execute the move
             printf("? invalid syntax\n\n");//might need correction
         else{
-            printf("=\nplaywall\n");
-            /*int P = playwall(A,*pN,pWW,pWB,arg1,arg2,arg3);
-            if(P == 1) return 1;*/     //malloc failed (PANIC)
+            int P = playwall(A,*pN,pWW,pWB,arg1,arg2,arg3,history,hSize);
+            if(P == 1) return 1;     //malloc failed (PANIC)
         }
     }
 
