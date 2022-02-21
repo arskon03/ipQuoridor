@@ -5,13 +5,15 @@
 
 void showboard(element **A,int N,int WW,int WB){
     int i,j;
-    for(i = 1;i <= (2*N + 3);i++){                      //board big enough to show all rows,collumns and the coordinates
+    for(i = 1;i <= (2*N + 3);i++){      //board big enough to show all rows,collumns and the coordinates                
         for(j = 1;j <= N+2;j++){ 
-            if(i == 1 || i == (2*N+3)){                 //First and last line are always the coordinates
+            //First and last line are always the coordinates
+            if(i == 1 || i == (2*N+3)){                 
                 if(j == 1 || j == N+2) printf("    ");
                 else printf(" %c  ", 'A'+(j-2));
             }
-            else if(i == 2 || i == (2*N+2)){            //second and second to last lines are always the same
+            //second and second to last lines are always the same
+            else if(i == 2 || i == (2*N+2)){            
                 if (j == 1 ) printf("   +");
                 else if(j == N+2) printf("    ");
                 else printf("---+");
@@ -21,8 +23,8 @@ void showboard(element **A,int N,int WW,int WB){
                 else if(j == N+2) printf(" %d  ",N-(i/2)+1);
                 else{
                     printf(" %c ",A[(i-3)/2][j-2].P);
+                    //printing 'H' instead of '|' for vertical wall if it exists
                     if(i == 3) printf("%c", (A[(i-3)/2][j-2].w_or == 'V') ? 'H' : '|');
-                    //printf 'H' instead of '|' for vertical wall if it exists
                     else printf("%c", (A[(i/2)-1][j-2].w_or == 'V' || A[(i/2)-2][j-2].w_or == 'V') ? 'H' : '|');
                 }
             }
@@ -66,7 +68,6 @@ int boardsize(element ***A, int nValue, int *pN){
     *pN = nValue;
     *A = temp;
     //(*A)[nValue - 1][nValue - 1].P = 'g';
-    printf("N: %d\nA[][]: %d\n",*pN, (*A));
     return 0;
 }
 
@@ -74,18 +75,15 @@ int boardsize(element ***A, int nValue, int *pN){
 void clearboard(element **A, int N, char ***history, int *hSize){
     int i,j;
     for(i = 0;i < N;i++)
-        for(j = 0;j < N;j++)
-        {
+        for(j = 0;j < N;j++){
             A[i][j].P = 'g';
-            printf("skata\n");
-            if(i == 0 && j == (int)(N/2))
+            if(i == 0 && j == (int)(N/2))        //black starting position
                 A[i][j].P = 'B';
-            else if(i == N-1 && j == (int)(N/2))
+            else if(i == N-1 && j == (int)(N/2)) //white starting position
                 A[i][j].P = 'W';
             else 
                 A[i][j].P = ' ';
             
-            printf("skata\n");
             A[i][j].w_or = ' ';
             A[i][j].V.x = 'A' + j;
             A[i][j].V.y = N - i;
@@ -113,7 +111,7 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
         p = 'B';
     else if (strcmp(playerBuff,"white") == 0 || strcmp(playerBuff,"w") == 0)
         p = 'W';
-    if (p == 'E'){
+    if (p == 'E'){ //invalid input
         printf("? invalid syntax\n\n");
         return 0;
     }
@@ -136,11 +134,11 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
     //check if position is valid
     if(v.y <= 0 || v.y > N-1){        //walls cannit ve placed on the last row
         printf("? illegal move\n\n");
-        return;
+        return 0;
     }
     toArray(N, &v, &i, &j);
-    if( j < 0 || j >= N-1 ){           //walls cannot be placed on the last collumn
-        printf("? illegal move\n\n");
+    if( j < 0 || j >= N-1  || A[i][j].w_or != ' '){  //walls cannot be placed on the last collumn
+        printf("? illegal move\n\n");                //or on top of each other
         return 0;
     }
     //Find wall orientation
@@ -150,7 +148,26 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
         return 1;
     }
     char o = 'E';
+    if(strcmp(orientBuff,"horizontal") == 0 || strcmp(orientBuff,"h") == 0)
+        o = 'H';
+    else if (strcmp(orientBuff,"vertical") == 0 || strcmp(orientBuff,"v") == 0)
+        o = 'V';
+    if(o == 'E'){ //invalid input
+        printf("? invalid syntax\n\n");
+        return 0;
+    }
     free(orientBuff);
+    //Removing 1 wall from said player it exists
+    if(p == 'B' && *pWB > 0)
+            (*pWB)--;
+    else if(p == 'W' && *pWW > 0)
+            (*pWW)--; 
+    else{
+        printf("? illegal move\n\n");
+        return 0;
+    }
+    //Placing wall with orientation
+    A[i][j].w_or = o;
 }
 
 // Convert a string to all lowercase
