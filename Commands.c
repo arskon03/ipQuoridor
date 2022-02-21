@@ -48,6 +48,111 @@ void showboard(element **A,int N,int WW,int WB){
     printf("\n\n");
 }
 
+/*Resets the size of the board and the rest are considered arbitrary*/
+int boardsize(element ***A, int nValue, int *pN){
+    int i;
+    if(*A != NULL){
+        for(i = 0;i < *pN;i++)
+            free((*A)[i]);
+        free(*A);
+    }
+    element **temp = NULL;
+    temp = malloc(nValue * sizeof(element *));
+    if(temp == NULL) return 1;
+    for (i = 0;i < nValue;i++){
+        temp[i] = malloc(nValue * sizeof(element));
+        if (temp[i] == NULL) return 1;
+    }
+    *pN = nValue;
+    *A = temp;
+    //(*A)[nValue - 1][nValue - 1].P = 'g';
+    printf("N: %d\nA[][]: %d\n",*pN, (*A));
+    return 0;
+}
+
+/*Walls cleared/Players at starting positions/Game history empty*/
+void clearboard(element **A, int N, char ***history, int *hSize){
+    int i,j;
+    for(i = 0;i < N;i++)
+        for(j = 0;j < N;j++)
+        {
+            A[i][j].P = 'g';
+            printf("skata\n");
+            if(i == 0 && j == (int)(N/2))
+                A[i][j].P = 'B';
+            else if(i == N-1 && j == (int)(N/2))
+                A[i][j].P = 'W';
+            else 
+                A[i][j].P = ' ';
+            
+            printf("skata\n");
+            A[i][j].w_or = ' ';
+            A[i][j].V.x = 'A' + j;
+            A[i][j].V.y = N - i;
+        }
+    free(*history);
+    *history = NULL;
+    *hSize = 0;
+}
+/*Places wall on the right position with the right orientation*/
+int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, char *orientation, char*** history, int* hSize){
+    //make sure wall position is valid
+    if (strlen(pos) > 3)
+    {
+        printf("? illegal move\n\n");
+        return 0;
+    }
+    //Check if player is valid
+    char p = 'E';
+    char *playerBuff = toLow(player);
+    if(playerBuff == NULL){  //malloc fail
+        printf("? Not enough memory!\n\n");
+        return 1;
+    }
+    if (strcmp(playerBuff,"black") == 0 || strcmp(playerBuff,"b") == 0)
+        p = 'B';
+    else if (strcmp(playerBuff,"white") == 0 || strcmp(playerBuff,"w") == 0)
+        p = 'W';
+    if (p == 'E'){
+        printf("? invalid syntax\n\n");
+        return 0;
+    }
+    free(playerBuff);
+    //Find wall position
+    vertex v;
+    char *temp = toUpper(pos);
+    if(temp == NULL){ //malloc fail
+        printf("? Not enough memory!\n\n");
+        return 1;
+    }
+    v.x = temp[0];
+    free(temp);
+    char numbers[3];
+    int i, j;
+    for(i = 0; i < strlen(pos) - 1; i++)
+        numbers[i] = pos[i + 1];
+    numbers[2] = '\0';
+    v.y = atoi(numbers);
+    //check if position is valid
+    if(v.y <= 0 || v.y > N-1){        //walls cannit ve placed on the last row
+        printf("? illegal move\n\n");
+        return;
+    }
+    toArray(N, &v, &i, &j);
+    if( j < 0 || j >= N-1 ){           //walls cannot be placed on the last collumn
+        printf("? illegal move\n\n");
+        return 0;
+    }
+    //Find wall orientation
+    char *orientBuff = toLow(orientation);
+    if(orientBuff == NULL){ //malloc fail
+        printf("? Not enough memory!\n\n");
+        return 1;
+    }
+    char o = 'E';
+    free(orientBuff);
+}
+
 // Convert a string to all lowercase
 char* toLow(char* string)
 {
@@ -66,7 +171,7 @@ char* toLow(char* string)
 
     return low;
 }
-// Convert a string to all lowercase
+// Convert a string to all uppercase
 char* toUpper(char* string)
 {
     int size = strlen(string);
@@ -113,14 +218,24 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, char***
     // Store the type of move
     char type = 'M';
     char p = 'E';
+    char op = 'E';
 
     // Store in a char what player made the move
     char *playerBuff = toLow(player);
-    if (strcmp(playerBuff,"black") == 0 || strcmp(playerBuff,"b") == 0)
-        p = 'B';
-    else if (strcmp(playerBuff,"white") == 0 || strcmp(playerBuff,"w") == 0)
-        p = 'W';
+    if (playerBuff == NULL)
+        return 1;
 
+    if (strcmp(playerBuff,"black") == 0 || strcmp(playerBuff,"b") == 0)
+    {
+        p = 'B';
+        op = 'W';
+    }     
+    else if (strcmp(playerBuff,"white") == 0 || strcmp(playerBuff,"w") == 0)
+    {
+        p = 'W';
+        op = 'B';
+    }
+    
     // If char *player is invalid throw error
     if (p == 'E')
     {
@@ -131,7 +246,10 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, char***
     
     // Find the position in the matrix the move is at
     vertex v;
-    char* temp = toUpper(pos);
+    char *temp = toUpper(pos);
+    if (temp == NULL)
+        return 1;
+    
     v.x = temp[0];
     free(temp);
 
@@ -142,22 +260,80 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, char***
 
     numbers[2] = '\0';
     v.y = atoi(numbers);
-    if(v.y == 0)
+
+    // If outside range then it is an illegal move
+    if(v.y <= 0 || v.y > N)
     {
         printf("? illegal move\n\n");
-        return;
+        return 0;
+    }
+    toArray(N, &v, &i, &j);
+    if( j < 0 || j >= N )
+    {
+        printf("? illegal move\n\n");
+        return 0;
     }
 
-    toArray(N, &v, &i, &j);
-    
+    // If vertex is not empty then is is an illegal move
+    if(A[i][j].P != ' ')
+    {
+        printf("? illegal move\n\n");
+        return 0;
+    }
+
     // Find the previous position of the player
     int prevI = -1, prevJ = -1;
 
+    short found = 0;
+    int ind = 1;
+    int vi = i, vj = j;
+    char vp = p;
+    
+    /* Try to find a vertex adjascent to the target that the player is in. If not, try to find one with the opponent.
+     * If it fails at both then it is an illegal move */
+    while(!found)
+    {
+        int tempI = (ind < 3) ? ( (i > 0) ? vi - 1 : ( (i < N - 1) ? vi + 1 : -1) ) : i;
+        int tempJ = (ind > 2) ? ( (j > 0) ? vj - 1 : ( (j < N - 1) ? vj + 1 : -1) ) : j;
+
+        if ( tempI == -1 || tempJ == -1 )
+            return 1;
+
+        if(A[tempI][tempJ].P == vp)
+        {
+            prevI = tempI;
+            prevJ = tempJ;
+            
+            if (vp == op)
+                found = 2;
+            else
+                found = 1;
+        }
+
+        if (ind == 4 && !found)
+        {
+            if(vp == op)
+                found = -1;
+            else
+            {
+                vp = op;
+                ind = 0;
+            }
+        }
+
+        ind++;
+    }
+    
+    /*
     if (i > 0)
         if (A[i - 1][j].P == p)
         {
             prevI = i-1;
             prevJ = j;
+        }
+        else if(A[i - 1][j].P == op)
+        {
+
         }
     
     if (i < N - 1)
@@ -177,21 +353,36 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, char***
     if (j < N - 1)
         if (A[i][j + 1].P == p)
         {
-            prevI = i-1;
+            prevI = i;
             prevJ = j+1;
         }
-    
+    */
     // If you didn't find somewhere adjascent then it is an illegal move
-    if(prevI == -1 || prevJ == -1)
+    if (found == -1)
     {
         printf("? illegal move\n\n");
-        return;
+        return 0;
+    }
+    // If you found the oponent then search the adjascent vertex in the direction of the move. If there isn't the player there, then illegal
+    else if (found == 2)
+    {
+        int diffI = i - prevI;
+        int diffJ = j - prevJ;
+        if (A[prevI - diffI][prevJ - diffJ].P != p)
+        {
+            printf("? illegal move\n\n");
+            return 0;
+        }
+        else
+        {
+            prevI -= diffI;
+            prevJ -= diffJ;
+        }
     }
 
     // Move the player
     A[i][j].P = p;
     A[prevI][prevJ].P = ' ';
-
 
     // If history is not passed as NULL then store the move and increament move count
     if (history != NULL)
@@ -203,13 +394,26 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, char***
 
         char** temp = realloc(*history, (++*hSize) * sizeof(char*));
         if (temp == NULL)
-        return 1;
+            return 1;
 
-        temp[*hSize] = move;
+        temp[*hSize - 1] = move;
+    
         *history = temp;
     }
+
+    // If player is white and is at the end of the board or is black and its at the start, then we have a winner
+    if((p == 'W' && i == 0) || (p == 'B' && i == N-1))
+        *pWinner = p;
 
     printf("=\n\n");
 
     return 0;
+}
+
+int abs(int n)
+{
+    if (n < 0)
+        return -1*n;
+    else
+        return n;
 }

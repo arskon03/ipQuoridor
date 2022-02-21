@@ -6,12 +6,10 @@
 int Command(char *input, element **A, int *pN, int *pWW, int *pWB, char *pWinner,char ***history,int *hSize);     //0 = proper execution, 1 = Panic situation
 
 int main(int argc, char **argv){             //board size and number of walls for each player
-    int N = 9, WW = 10, WB = 10, i, Panic;
-
-    char Winner = '\0', input[30];   //(INPUT NEEDS TO BE BIGGER)
-    element **A;                     //A will hold player positions/Wall positions/orientation and the coordinates as vertices
+    int N = 0, WW, WB = 10, i, Panic = 0,hSize;
+    char Winner = '\0', **history = NULL, input[30];   //(INPUT NEEDS TO BE BIGGER), history is NULL so clearboard can free it
+    element **A = NULL;                     //A will hold player positions/Wall positions/orientation and the coordinates as vertices
     /*if(argc == 1){      
-
         N = 9;
         WW = WB = 10;
     }
@@ -35,9 +33,15 @@ int main(int argc, char **argv){             //board size and number of walls fo
         printf("Program Usage: ./ipquoridor -<size> -<walls>");
         return 1;
     }*/
-    printf("Dimension = %d\nWalls = %d\n",N,WW);              //TEST (CHECK)
     /*Initializing with default values*/
-    A = malloc(N*sizeof(element *));
+    Panic = boardsize(&A,9,&N);
+    if(Panic == 1){ //malloc failed
+        printf("? Not enough memory!\n\n");
+        return 1;
+    }
+    clearboard(A,N,&history,&hSize);
+    WW = WB = 10;
+    /*A = malloc(N*sizeof(element *));
     if (A == NULL){
         printf("? Not enough memory!\n\n");
         return 1;
@@ -65,10 +69,10 @@ int main(int argc, char **argv){             //board size and number of walls fo
         printf("\n");
     }
     int hSize = 0;
-    char **history;
+    char **history = NULL;*/
     char temp[30]; //temp will hold the preprocessed string according to the protocol
     /*Preprocessing input before calling command function*/
-    while(Winner == '\0'){
+    while(Panic == 0){
         fgets(input,sizeof(input),stdin);
             for(int i = 0;i < 30;i++){         
                 if(input[i] >= 1 && input[i] <= 31 || input[i] == 127){
@@ -88,7 +92,7 @@ int main(int argc, char **argv){             //board size and number of walls fo
             }   
         //printf("%s\n",temp);                              //TEST (CHECK)
         Panic = Command(temp,A,&N,&WW,&WB,&Winner,&history,&hSize);       //interprets command based on the given string 
-        if (Panic == 1 || Panic == -1) break;
+        //if (Panic == 1 || Panic == -1) break;
     }
     if (Panic == 1) return 1;
     if (Panic == -1) return 0;  //user gave quit command
@@ -155,8 +159,9 @@ int Command(char *input,element **A,int *pN,int *pWW,int *pWB,char *pWinner,char
         }
         int tempN = atoi(arg1);
         if(tempN > 0 && tempN <= 25 && tempN%2 == 1){
+            int P = boardsize(&A,tempN,pN);  //board configuration/number of wall/game history = ARBITRARY
+            if(P == 1) return 1;             //malloc failed (PANIC)
             printf("=\n\n");
-            //boardsize(A,pN,pWW,pWB);                     //board configuration/number of wall/game history = ARBITRARY
         }
         else printf("? unacceptable size\n\n");
     }
@@ -164,7 +169,7 @@ int Command(char *input,element **A,int *pN,int *pWW,int *pWB,char *pWinner,char
     /* Command: clear_board */
     else if(strcmp(com,"clear_board") == 0){
         printf("=\n\n");
-        //clearboard(A,N,pWW,pWB);                           //players starting position-wallls arbitrary-game history empty
+        clearboard(A,*pN,history,hSize);     //players starting position-walls arbitrary-game history empty
     }
 
     /* Command: walls */
@@ -180,7 +185,7 @@ int Command(char *input,element **A,int *pN,int *pWW,int *pWB,char *pWinner,char
 
     /* Command: showboard */
     else if(strcmp(com,"showboard") == 0){
-        //printf("=\nshowboard\n");
+        printf("=\n");
         showboard(A,*pN,*pWW,*pWB);
     }
 
@@ -205,7 +210,8 @@ int Command(char *input,element **A,int *pN,int *pWW,int *pWB,char *pWinner,char
             printf("? invalid syntax\n\n");//might need correction
         else{
             printf("=\nplaywall\n");
-            //playwall(A,*pN,pWW,pWB,arg1,arg2,arg3);
+            /*int P = playwall(A,*pN,pWW,pWB,arg1,arg2,arg3);
+            if(P == 1) return 1;*/     //malloc failed (PANIC)
         }
     }
 
