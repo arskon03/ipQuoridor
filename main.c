@@ -209,7 +209,7 @@ int Command(char *input,element ***A,int *pN,int *pWW,int *pWB,char *pWinner,cha
         if(arg1 == NULL || arg2 == NULL || arg3 == NULL)   //player,position,and wall direction are neeeded to execute the move
             printf("? invalid syntax\n\n");//might need correction
         else{
-            int P = playwall(A,*pN,pWW,pWB,arg1,arg2,arg3,history,hSize);
+            int P = playwall(*A,*pN,pWW,pWB,arg1,arg2,arg3,history,hSize);
             if(P == 1) return 1;     //malloc failed (PANIC)
         }
     }

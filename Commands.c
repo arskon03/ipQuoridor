@@ -132,7 +132,7 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
     numbers[2] = '\0';
     v.y = atoi(numbers);
     //check if position is valid
-    if(v.y <= 0 || v.y > N-1){        //walls cannit ve placed on the last row
+    if(v.y <= 1 || v.y > N){         //walls cannit ve placed on the last row
         printf("? illegal move\n\n");
         return 0;
     }
@@ -149,15 +149,21 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
     }
     char o = 'E';
     if(strcmp(orientBuff,"horizontal") == 0 || strcmp(orientBuff,"h") == 0)
-        o = 'H';
+        if(A[i][j-1].w_or != 'H' && A[i][j+1].w_or != 'H') //checking if wall can be placed there
+            o = 'H';
+        else{
+            printf("? illegal move\n\n");
+            return 0;
+        }
     else if (strcmp(orientBuff,"vertical") == 0 || strcmp(orientBuff,"v") == 0)
-        o = 'V';
-    if(o == 'E'){ //invalid input
-        printf("? invalid syntax\n\n");
-        return 0;
-    }
+        if(A[i-1][j].w_or != 'V' && A[i+1][j].w_or != 'V') //checking if wall can be placed there
+            o = 'V';
+        else{
+            printf("? illegal move\n\n");
+            return 0;
+        }
     free(orientBuff);
-    //Removing 1 wall from said player it exists
+    //Removing 1 wall from said player if it exists
     if(p == 'B' && *pWB > 0)
             (*pWB)--;
     else if(p == 'W' && *pWW > 0)
@@ -168,6 +174,8 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
     }
     //Placing wall with orientation
     A[i][j].w_or = o;
+    printf("=\n\n");
+    return 0;
 }
 
 // Convert a string to all lowercase
