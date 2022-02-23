@@ -7,7 +7,7 @@ int Command(char *input, element ***A, int *pN, int *pWW, int *pWB, char *pWinne
 
 int main(int argc, char **argv){             //board size and number of walls for each player
     int N = 0, WW, WB = 10, i, Panic = 0,hSize;
-    char Winner = '\0', **history = NULL, input[30];   //(INPUT NEEDS TO BE BIGGER), history is NULL so clearboard can free it
+    char Winner = '\0', **history = NULL, input[256]; //history is NULL so clearboard can free it
     element **A = NULL;                     //A will hold player positions/Wall positions/orientation and the coordinates as vertices
     /*if(argc == 1){      
         N = 9;
@@ -72,12 +72,12 @@ int main(int argc, char **argv){             //board size and number of walls fo
     char **history = NULL;*/
 
     /*Preprocessing input before calling command function*/
-    char temp[30]; //temp will hold the preprocessed string according to the protocol
+    char temp[256]; //temp will hold the preprocessed string according to the protocol
     while(Panic == 0){ //loop until Panic or quit command
         fgets(input,sizeof(input),stdin);
         if(*input == '\n') continue; //a single newline character is not considered a command
-            for(int i = 0;i < 30;i++){         
-                if(input[i] >= 1 && input[i] <= 31 || input[i] == 127){
+            for(int i = 0;i < 256;i++){         
+                if((input[i] >= 1 && input[i] <= 31) || input[i] == 127){
                     if(input[i] == '\t'){
                         temp[i] = ' ';
                         continue;
@@ -92,7 +92,7 @@ int main(int argc, char **argv){             //board size and number of walls fo
                 }
                 temp[i] = input[i];
             }   
-        //printf("%s\n",temp);                              //TEST (CHECK)
+        printf("%s\n",temp);                              //TEST (CHECK)
         Panic = Command(temp,&A,&N,&WW,&WB,&Winner,&history,&hSize);  //interprets command based on the given string 
         //if (Panic == 1 || Panic == -1) break;
     }
@@ -108,11 +108,13 @@ int Command(char *input,element ***A,int *pN,int *pWW,int *pWB,char *pWinner,cha
     char *com = NULL,*arg1 = NULL,*arg2 = NULL,*arg3 = NULL;  //tokens extracted from original string                                       
     com = strtok(input," \n");                                //\n is needed as a delimiter in order to be replaced by a \0
 
-    /*Only blank characters on input*/
+    /* Only blank characters on input */
     if(com == NULL) printf("? unknown command\n\n");
 
     /* Command: name */
     else if(strcmp(com,"name") == 0) printf("= sdi2100083\n\n");
+
+    /* Command: known_command */
     else if (strcmp(com,"known_command") == 0){ //ALWAYS TRUE
         arg1 = strtok(NULL," \n");
         if (strcmp(arg1,"name") == 0 || strcmp(arg1,"known_command") == 0)

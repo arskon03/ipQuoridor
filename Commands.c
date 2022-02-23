@@ -122,7 +122,7 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
     //Find wall position
     vertex v;
     char *temp = toUpper(pos);
-    if(temp == NULL){ //malloc fail
+    if(temp == NULL){ //malloc failed
         printf("? Not enough memory!\n\n");
         return 1;
     }
@@ -152,14 +152,20 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
     }
     char o = 'E';
     if(strcmp(orientBuff,"horizontal") == 0 || strcmp(orientBuff,"h") == 0)
-        if(A[i][j-1].w_or != 'H' && A[i][j+1].w_or != 'H') //checking if wall can be placed there
+        //checking if wall can be placed there
+        if (j == 0 && A[i][j+1].w_or != 'H') //first collumn can't have a horizontal wall at the left it
+            o = 'H';
+        else if(A[i][j-1].w_or != 'H' && A[i][j+1].w_or != 'H')
             o = 'H';
         else{
             printf("? illegal move\n\n");
             return 0;
         }
     else if (strcmp(orientBuff,"vertical") == 0 || strcmp(orientBuff,"v") == 0)
-        if(A[i-1][j].w_or != 'V' && A[i+1][j].w_or != 'V') //checking if wall can be placed there
+        //checking if wall can be placed there
+        if(i == 0 && A[i+1][j].w_or != 'V') //first row can't have a vertical wall above it
+            o = 'V';
+        else if(A[i-1][j].w_or != 'V' && A[i+1][j].w_or != 'V')
             o = 'V';
         else{
             printf("? illegal move\n\n");
@@ -401,6 +407,7 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, char***
     // If you didn't find somewhere adjascent then it is an illegal move
     if (found == -1)
     {
+        printf("123\n"); //problem is here
         printf("? illegal move\n\n");
         return 0;
     }
