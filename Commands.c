@@ -7,7 +7,7 @@ void showboard(element **A,int N,int WW,int WB){
     int i,j;
     for(i = 1;i <= (2*N + 3);i++){      //board big enough to show all rows,collumns and the coordinates                
         for(j = 1;j <= N+2;j++){ 
-            //First and last line are always the coordinates
+            //First and last lines are always the coordinates
             if(i == 1 || i == (2*N+3)){                 
                 if(j == 1 || j == N+2) printf("    ");
                 else printf(" %c  ", 'A'+(j-2));
@@ -18,6 +18,7 @@ void showboard(element **A,int N,int WW,int WB){
                 else if(j == N+2) printf("    ");
                 else printf("---+");
             }
+            //Rows with blocks of the board
             else if(i%2 == 1){
                 if(j == 1) printf("%2d |",N-(i/2)+1);
                 else if(j == N+2) printf(" %d  ",N-(i/2)+1);
@@ -28,6 +29,7 @@ void showboard(element **A,int N,int WW,int WB){
                     else printf("%c", (A[(i/2)-1][j-2].w_or == 'V' || A[(i/2)-2][j-2].w_or == 'V') ? 'H' : '|');
                 }
             }
+            //Rows between the blocks
             else{ //i%2 == 0
                 if(j == 1) printf("   +");
                 else if(j == N+2) printf("    ");
@@ -85,8 +87,9 @@ void clearboard(element **A, int N, char ***history, int *hSize){
                 A[i][j].P = ' ';
             
             A[i][j].w_or = ' ';
-            A[i][j].V.x = 'A' + j;
-            A[i][j].V.y = N - i;
+            toVertex(N, &A[i][j].V, i, j);
+            /*A[i][j].V.x = 'A' + j;
+            A[i][j].V.y = N - i;*/
         }
     free(*history);
     *history = NULL;
@@ -175,6 +178,16 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
     //Placing wall with orientation
     A[i][j].w_or = o;
     printf("=\n\n");
+    //Adding action to game history
+    char action[7]; //This string will hold the description of the action performed
+    char** tempS = realloc(*history, (++*hSize) * sizeof(char*));
+    if (tempS == NULL){
+        printf("? not enough memory!\n\n");
+        return 1;
+    }
+    sprintf(action, "W%c%02d%c",A[i][j].V.x,A[i][j].V.y,o);
+    tempS[*hSize - 1] = action;
+    *history = tempS;
     return 0;
 }
 
@@ -273,8 +286,11 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, char***
     vertex v;
     char *temp = toUpper(pos);
     if (temp == NULL)
+    {
+        printf("? not enough memory!\n\n");
         return 1;
-    
+    }
+
     v.x = temp[0];
     free(temp);
 
@@ -321,8 +337,8 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, char***
         int tempI = (ind < 3) ? ( (i > 0) ? vi - 1 : ( (i < N - 1) ? vi + 1 : -1) ) : i;
         int tempJ = (ind > 2) ? ( (j > 0) ? vj - 1 : ( (j < N - 1) ? vj + 1 : -1) ) : j;
 
-        if ( tempI == -1 || tempJ == -1 )
-            return 1;
+        if ( tempI == -1 || tempJ == -1 ) 
+            return 1;     //1 = panic = crash
 
         if(A[tempI][tempJ].P == vp)
         {
@@ -413,13 +429,16 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, char***
     if (history != NULL)
     {
         vertex prevV;
-        toVertex(N, &prevV, prevI, prevJ);
+        toVertex(N, &prevV, prevI, prevJ); //could use A[prevI][prevJ].v
         
         sprintf(move, "%c%c%02d>%c%02d%c", type, prevV.x, prevV.y, v.x, v.y, p);
 
         char** temp = realloc(*history, (++*hSize) * sizeof(char*));
         if (temp == NULL)
+        {
+            printf("? not enough memory!\n\n");
             return 1;
+        }
 
         temp[*hSize - 1] = move;
     

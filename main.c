@@ -70,10 +70,12 @@ int main(int argc, char **argv){             //board size and number of walls fo
     }
     int hSize = 0;
     char **history = NULL;*/
-    char temp[30]; //temp will hold the preprocessed string according to the protocol
+
     /*Preprocessing input before calling command function*/
+    char temp[30]; //temp will hold the preprocessed string according to the protocol
     while(Panic == 0){ //loop until Panic or quit command
         fgets(input,sizeof(input),stdin);
+        if(*input == '\n') continue; //a single newline character is not considered a command
             for(int i = 0;i < 30;i++){         
                 if(input[i] >= 1 && input[i] <= 31 || input[i] == 127){
                     if(input[i] == '\t'){
@@ -85,13 +87,13 @@ int main(int argc, char **argv){             //board size and number of walls fo
                     continue;
                 }
                 if(input[i] == '#'){
-                    temp[i] == '\0';         //temp ends here so that everything after the '#' character is removed
+                    temp[i] == '\0'; //temp ends here so that everything after the '#' character is removed
                     break;
                 }
                 temp[i] = input[i];
             }   
         //printf("%s\n",temp);                              //TEST (CHECK)
-        Panic = Command(temp,&A,&N,&WW,&WB,&Winner,&history,&hSize);       //interprets command based on the given string 
+        Panic = Command(temp,&A,&N,&WW,&WB,&Winner,&history,&hSize);  //interprets command based on the given string 
         //if (Panic == 1 || Panic == -1) break;
     }
     if (Panic == 1) return 1;
@@ -103,11 +105,14 @@ int main(int argc, char **argv){             //board size and number of walls fo
 }
 
 int Command(char *input,element ***A,int *pN,int *pWW,int *pWB,char *pWinner,char ***history,int *hSize){
-    char *com = NULL,*arg1 = NULL,*arg2 = NULL,*arg3 = NULL;  //tokens extracted from original string                                         
+    char *com = NULL,*arg1 = NULL,*arg2 = NULL,*arg3 = NULL;  //tokens extracted from original string                                       
     com = strtok(input," \n");                                //\n is needed as a delimiter in order to be replaced by a \0
 
+    /*Only blank characters on input*/
+    if(com == NULL) printf("? unknown command\n\n");
+
     /* Command: name */
-    if(strcmp(com,"name") == 0) printf("= sdi2100083\n\n");
+    else if(strcmp(com,"name") == 0) printf("= sdi2100083\n\n");
     else if (strcmp(com,"known_command") == 0){ //ALWAYS TRUE
         arg1 = strtok(NULL," \n");
         if (strcmp(arg1,"name") == 0 || strcmp(arg1,"known_command") == 0)
@@ -139,8 +144,12 @@ int Command(char *input,element ***A,int *pN,int *pWW,int *pWB,char *pWinner,cha
 
     /* Command: undo */
     else if(strcmp(com,"undo") == 0){
-        arg1 = strtok(NULL,input);
-        int times = atoi(arg1);
+        arg1 = strtok(NULL," \n");
+        int times;
+        if(arg1 == NULL)
+            times = 1;
+        else
+            times = atoi(arg1);
         printf("=\nundo %d\n\n",times);                     //TEST 
         /*if(times <= 0) printf("=\n\n");
         else if (times <= MP){                              //MP = moves played
@@ -197,7 +206,8 @@ int Command(char *input,element ***A,int *pN,int *pWW,int *pWB,char *pWinner,cha
             printf("? invalid syntax\n");              //might need correction
         else{
             //printf("=\nplaymove\n");
-            playmove(*A,*pN,arg1,arg2,pWinner,history,hSize);
+            int P = playmove(*A,*pN,arg1,arg2,pWinner,history,hSize);
+            if(P == 1) return 1;     //malloc failed (PANIC)
         }
     }
 
