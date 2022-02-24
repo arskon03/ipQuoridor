@@ -6,7 +6,8 @@
 /* This is a breadth-first search based pathfinder algorithm */
 /* Sources: https://en.wikipedia.org/wiki/Breadth-first_search
             https://www.youtube.com/watch?v=KiCBXu4P-2Y&ab_channel=WilliamFiset */
-int pathfinder(A, N,char P, sr, sc, q){
+int pathfinder(A, N,char P, sr, sc){
+    qptr = q; 
     int i,r,c,rr,cc;
     int dr[4] = {-1,+1,0,0}; // Direction vectors for rows
     int dc[4] = {0,0,+1,-1}; // Direction vectors for collumns
@@ -34,8 +35,9 @@ int pathfinder(A, N,char P, sr, sc, q){
     enqueue(sr,sc);
     visited[sr][sc] = 1;
     while(size(q) > 0){
-        
-        dequeue(r,c);
+        r = q->x;
+        c = q->y;
+        dequeue(&q);
         if(r == d){
             end = 1;
             break;
@@ -87,5 +89,5 @@ void enqueue(qptr *ptr, int r, int c){
 
 /* Dequeue = delete first node */
 void dequeue(qptr *ptr){
-
+    
 }
