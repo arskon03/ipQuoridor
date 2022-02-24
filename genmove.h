@@ -1,0 +1,1 @@
+int pathfinder(element **A, int N);
