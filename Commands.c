@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "Commands.h"
+#include "genmove.h"
 
 void showboard(element **A,int N,int WW,int WB){
     int i,j;
@@ -98,11 +99,11 @@ void clearboard(element **A, int N, char ***history, int *hSize){
 /*Places wall on the right position with the right orientation*/
 int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, char *orientation, char*** history, int* hSize){
     //make sure wall position is valid
-    if (strlen(pos) > 3)
+    /*if (strlen(pos) > 3)
     {
         printf("? illegal move\n\n");
         return 0;
-    }
+    }*/
     //Check if player is valid
     char p = 'E';
     char *playerBuff = toLow(player);
@@ -131,11 +132,16 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
     char numbers[3];
     int i, j;
     for(i = 0; i < strlen(pos) - 1; i++)
-        numbers[i] = pos[i + 1];
+        if(pos[i + 1] < '0' || pos[i + 1] > '9'){   //PLAYMOVE NEEDS THIS
+            printf("? invalid syntax\n\n");
+            return 0;
+        }
+        else
+            numbers[i] = pos[i + 1];
     numbers[2] = '\0';
     v.y = atoi(numbers);
     //check if position is valid
-    if(v.y <= 1 || v.y > N){         //walls cannit ve placed on the last row
+    if(v.y <= 1 || v.y > N){         //walls cannot be placed on the last row
         printf("? illegal move\n\n");
         return 0;
     }
@@ -171,6 +177,10 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
             printf("? illegal move\n\n");
             return 0;
         }
+    if(o == 'E'){
+        printf("? invalid syntax");
+        return 0;
+    }
     free(orientBuff);
     //Removing 1 wall from said player if it exists
     if(p == 'B' && *pWB > 0)
@@ -196,6 +206,8 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
     *history = tempS;
     return 0;
 }
+
+
 
 // Convert a string to all lowercase
 char* toLow(char* string)
@@ -248,7 +260,7 @@ void toArray(int N, vertex* v, int* i, int* j)
     *j = v->x - 'A';
 }
 
-// Add logic for walls and going onto ather player
+// Add logic for walls/Change error message/Debug
 int playmove(element **A, int N, char *player, char *pos, char *pWinner, char*** history, int* hSize)
 {
     // Make sure the move is not random words

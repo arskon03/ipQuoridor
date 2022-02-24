@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "Commands.h"
+#include "genmove.h"
 
 int Command(char *input, element ***A, int *pN, int *pWW, int *pWB, char *pWinner,char ***history,int *hSize);     //0 = proper execution, 1 = Panic situation
 
