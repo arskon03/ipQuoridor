@@ -3,30 +3,89 @@
 #include "Commands.h"
 #include "genmove.h"
 
-/* This is a breadth-first search based pathfinder algorithm*/
-/* Source: https://en.wikipedia.org/wiki/Breadth-first_search */
-int pathfinder(A,N){
-    int r,c,i,j;
-    //Initializing an adjacency list as an N^2 X N^2 matrix
-    //Where row r represents the cell of A[i][j] where N*i + j == r and same goes for the collumns(c = N*i + j)
-    //So AdjL[r][c] is 0 when cell r of A is not connected to element c and 1 when they are connected
-    //Here connected means that player can move from m to n, so they are adjacent with no wall between them
-    int **AdjL = malloc(N*N * sizeof(element*));
-    if(AdjL == NULL){
-        printf("? Not enough memory\n\n");
-        return 1;
+/* This is a breadth-first search based pathfinder algorithm */
+/* Sources: https://en.wikipedia.org/wiki/Breadth-first_search
+            https://www.youtube.com/watch?v=KiCBXu4P-2Y&ab_channel=WilliamFiset */
+int pathfinder(A, N,char P, sr, sc, q){
+    int i,r,c,rr,cc;
+    int dr[4] = {-1,+1,0,0}; // Direction vectors for rows
+    int dc[4] = {0,0,+1,-1}; // Direction vectors for collumns
+    int moves = 0; // Number of steps 
+    int d = (P == 'W') ? 0 : N-1; // = Destination (assuming the function is called with the right parameters)
+
+    int next_layer; // Equal to the nodes added to the queue in this layer.Used to keep track of the moves
+    int this_layer; // Equal to the nodes in this layer. Used to know when we move to the next layer
+
+    int end = 0;
+    int **visited; // 1 if cell has already been visited, 0 if not
+    visited = malloc(N * sizeof(int*));
+    if(visited = NULL){
+        printf("? not enough memory!\n\n");
+        return -100;
     }
-    for(r = 0; r < N*N;r++){
-        AdjL[r] = malloc(N*N * sizeof(element));
-        if(AdjL[r] == NULL){
-            printf("? Not enough memory\n\n");
-            return 1;
+    for(i = 0;i < N;i++){
+        visited[i] = malloc(N * sizeof(int));
+        if(visited[i] = NULL){
+            printf("? not enough memory!\n\n");
+            return -100;
         }
     }
-    //Calculating connection's
-    for(r = 0;r < N*N;r++)
-        for(c = 0;c < N*N;c++){
-            //main diagonal is 0 because it represents a cell's connection to itself
-            if(r = c) AdjL[r][c] = 0;
+    // Find shortest path (only number of steps)
+    enqueue(sr,sc);
+    visited[sr][sc] = 1;
+    while(size(q) > 0){
+        
+        dequeue(r,c);
+        if(r == d){
+            end = 1;
+            break;
         }
+        // Explore connections(adjacent cells with no walls between)
+        for(i = 0;i < 4;i++){
+            rr = r + dr[i];
+            cc = c + dc[i];
+            // Discard cells that don't exist
+            if (rr < 0 || cc < 0) continue;
+            if (rr >= N || cc >= N) continue;
+
+            // Discard cells that are visited or not connected
+            if(visited[rr][cc]) continue;
+            if(!connected(r,c,rr,cc)) continue;
+
+            // Enqueue and mark as visited
+            enqueue(rr,cc);
+            visited[rr][cc] = 1;
+            next_layer++;
+            
+        }
+        this_layer--;
+        if(this_layer == 0){
+            this_layer = next_layer;
+            next_layer = 0;
+            moves++;
+        }
+        
+    }
+    // Process ended so we free allocated memory and return the 
+    for(i = 0;i < N;i++) free(visited[i]);
+    free(visited);
+    if(end) return moves;
+    return -1; // Indicates that the path doesn't exist
+}
+
+/* Enqueue = Insert at end of list */
+void enqueue(qptr *ptr, int r, int c){
+    // Find last node
+    while(*ptr != NULL)
+        ptr = &((*ptr)->next);
+    // Insert new node at end
+    *ptr = malloc(sizeof(struct Qnode)); 
+    (*ptr)->x = r;
+    (*ptr)->y = c;
+    (*ptr)->next = NULL;
+}
+
+/* Dequeue = delete first node */
+void dequeue(qptr *ptr){
+
 }

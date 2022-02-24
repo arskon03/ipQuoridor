@@ -4,9 +4,10 @@
 #include "Commands.h"
 #include "genmove.h"
 
+/* I don't know how to make this more readable, im sorry */
 void showboard(element **A,int N,int WW,int WB){
     int i,j;
-    for(i = 1;i <= (2*N + 3);i++){      //board big enough to show all rows,collumns and the coordinates                
+    for(i = 1;i <= (2*N + 3);i++){     //board big enough to show all rows,collumns and the coordinates                
         for(j = 1;j <= N+2;j++){ 
             //First and last lines are always the coordinates
             if(i == 1 || i == (2*N+3)){                 
@@ -56,13 +57,14 @@ void showboard(element **A,int N,int WW,int WB){
 /*Resets the size of the board and the rest are considered arbitrary*/
 int boardsize(element ***A, int nValue, int *pN){
     int i;
+    //Free previous matrix
     if(*A != NULL){
         for(i = 0;i < *pN;i++)
             free((*A)[i]);
         free(*A);
     }
-    element **temp = NULL;
-    temp = malloc(nValue * sizeof(element *));
+    //Allocate matrix with the new size
+    element **temp = malloc(nValue * sizeof(element *));
     if(temp == NULL) return 1;
     for (i = 0;i < nValue;i++){
         temp[i] = malloc(nValue * sizeof(element));
@@ -70,16 +72,15 @@ int boardsize(element ***A, int nValue, int *pN){
     }
     *pN = nValue;
     *A = temp;
-    //(*A)[nValue - 1][nValue - 1].P = 'g';
     return 0;
 }
 
 /*Walls cleared/Players at starting positions/Game history empty*/
 void clearboard(element **A, int N, char ***history, int *hSize){
     int i,j;
+    //Board Configuration at the start of the game
     for(i = 0;i < N;i++)
         for(j = 0;j < N;j++){
-            //(*A)[i][j].P = 'g';
             if(i == 0 && j == (int)(N/2))        //black starting position
                 A[i][j].P = 'B';
             else if(i == N-1 && j == (int)(N/2)) //white starting position
@@ -92,10 +93,12 @@ void clearboard(element **A, int N, char ***history, int *hSize){
             /*A[i][j].V.x = 'A' + j;
             A[i][j].V.y = N - i;*/
         }
-    free(*history);
+    //Game history = empty
+    free(*history); 
     *history = NULL;
     *hSize = 0;
 }
+
 /*Places wall on the right position with the right orientation*/
 int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, char *orientation, char*** history, int* hSize){
     //make sure wall position is valid
@@ -193,9 +196,9 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
     }
     //Placing wall with orientation
     A[i][j].w_or = o;
-    printf("=\n\n");
+    printf("= \n\n");
     //Adding action to game history
-    char action[7]; //This string will hold the description of the action performed
+    char action[8]; //This string will hold the description of the action performed
     char** tempS = realloc(*history, (++*hSize) * sizeof(char*));
     if (tempS == NULL){
         printf("? not enough memory!\n\n");
@@ -203,6 +206,7 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
     }
     sprintf(action, "W%c%02d%c",A[i][j].V.x,A[i][j].V.y,o);
     tempS[*hSize - 1] = action;
+    tempS[*hSize] = '/0';
     *history = tempS;
     return 0;
 }
@@ -472,7 +476,7 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, char***
 
     return 0;
 }
-
+//VALE printf("= \n\n") AN OLA PANE KALA KAI EKTELESTEI H KINISI
 int abs(int n)
 {
     if (n < 0)

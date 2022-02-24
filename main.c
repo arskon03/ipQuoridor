@@ -113,7 +113,7 @@ int Command(char *input,element ***A,int *pN,int *pWW,int *pWB,char *pWinner,cha
     if(com == NULL) printf("? unknown command\n\n");
 
     /* Command: name */
-    else if(strcmp(com,"name") == 0) printf("= sdi2100083\n\n");
+    else if(strcmp(com,"name") == 0) printf("= 21-083.21-\n\n");//sdi arskon03
 
     /* Command: known_command */
     else if (strcmp(com,"known_command") == 0){ //ALWAYS TRUE
@@ -141,7 +141,7 @@ int Command(char *input,element ***A,int *pN,int *pWW,int *pWB,char *pWinner,cha
 
     /* Command: quit */
     else if(strcmp(com,"quit") == 0){
-        printf("=\n\n");
+        printf("= \n\n");
         return -1;
     }
 
@@ -153,7 +153,7 @@ int Command(char *input,element ***A,int *pN,int *pWW,int *pWB,char *pWinner,cha
             times = 1;
         else
             times = atoi(arg1);
-        printf("=\nundo %d\n\n",times);                     //TEST 
+        printf("= \nundo %d\n\n",times);                     //TEST 
         /*if(times <= 0) printf("=\n\n");
         else if (times <= MP){                              //MP = moves played
             printf("=\n\n");
@@ -173,14 +173,14 @@ int Command(char *input,element ***A,int *pN,int *pWW,int *pWB,char *pWinner,cha
         if(tempN > 0 && tempN <= 25 && tempN%2 == 1){
             int P = boardsize(A,tempN,pN);  //board configuration/number of wall/game history = ARBITRARY
             if(P == 1) return 1;             //malloc failed (PANIC)
-            printf("=\n\n");
+            printf("= \n\n");
         }
         else printf("? unacceptable size\n\n");
     }
 
     /* Command: clear_board */
     else if(strcmp(com,"clear_board") == 0){
-        printf("=\n\n");
+        printf("= \n\n");
         clearboard(*A,*pN,history,hSize);     //players starting position-walls arbitrary-game history empty
     }
 
@@ -192,12 +192,12 @@ int Command(char *input,element ***A,int *pN,int *pWW,int *pWB,char *pWinner,cha
             return 0;
         }
         *pWW = *pWB = atoi(arg1);
-        printf("=\n\n");
+        printf("= \n\n");
     }
 
     /* Command: showboard */
     else if(strcmp(com,"showboard") == 0){
-        printf("=\n");
+        printf("= \n");
         showboard(*A,*pN,*pWW,*pWB);
     }
 
@@ -233,7 +233,7 @@ int Command(char *input,element ***A,int *pN,int *pWW,int *pWB,char *pWinner,cha
         if(arg1 == NULL) //might need correction
             printf("? invalid syntax\n\n");
         else
-            printf("=\ngenmove\n\n");                                       //genmove determines the "best move" and returns a string with
+            printf("= \ngenmove\n\n");                                       //genmove determines the "best move" and returns a string with
             //Command(genmove(A,*pN,arg1,pWW,pWB),A,pN,pWW,pWB,pWinner);    //the command that is passed on to a recursive call of the command function
     }
 
