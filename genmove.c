@@ -6,8 +6,8 @@
 /* This is a breadth-first search based pathfinder algorithm */
 /* Sources: https://en.wikipedia.org/wiki/Breadth-first_search
             https://www.youtube.com/watch?v=KiCBXu4P-2Y&ab_channel=WilliamFiset */
-int pathfinder(A, N,char P, sr, sc){
-    qptr = q; 
+int pathfinder(element **A, int N, char P, int sr, int sc){
+    qptr q;
     int i,r,c,rr,cc;
     int dr[4] = {-1,+1,0,0}; // Direction vectors for rows
     int dc[4] = {0,0,+1,-1}; // Direction vectors for collumns
@@ -32,9 +32,9 @@ int pathfinder(A, N,char P, sr, sc){
         }
     }
     // Find shortest path (only number of steps)
-    enqueue(sr,sc);
+    enqueue(&q, sr, sc);
     visited[sr][sc] = 1;
-    while(size(q) > 0){
+    while(!empty(q)){
         r = q->x;
         c = q->y;
         dequeue(&q);
@@ -55,7 +55,7 @@ int pathfinder(A, N,char P, sr, sc){
             if(!connected(r,c,rr,cc)) continue;
 
             // Enqueue and mark as visited
-            enqueue(rr,cc);
+            enqueue(&q, rr, cc);
             visited[rr][cc] = 1;
             next_layer++;
             
@@ -66,7 +66,6 @@ int pathfinder(A, N,char P, sr, sc){
             next_layer = 0;
             moves++;
         }
-        
     }
     // Process ended so we free allocated memory and return the 
     for(i = 0;i < N;i++) free(visited[i]);
@@ -81,7 +80,7 @@ void enqueue(qptr *ptr, int r, int c){
     while(*ptr != NULL)
         ptr = &((*ptr)->next);
     // Insert new node at end
-    *ptr = malloc(sizeof(struct Qnode)); 
+    *ptr = malloc(sizeof(struct Qnode));
     (*ptr)->x = r;
     (*ptr)->y = c;
     (*ptr)->next = NULL;
@@ -89,5 +88,17 @@ void enqueue(qptr *ptr, int r, int c){
 
 /* Dequeue = delete first node */
 void dequeue(qptr *ptr){
-    
+    if(*ptr != NULL){
+        qptr temp = *ptr;
+        *ptr = (*ptr)->next;
+        free(temp);
+    }
+}
+
+/*Checking if queue is empty*/
+int empty(qptr q){
+    if (q == NULL)
+        return 1;
+    else
+        return 0;
 }
