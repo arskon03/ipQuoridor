@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "Commands.h"
-#include "genmove.h"
+#include "pathfinder.h"
+#include "utilities.h"
 
 /* This is a breadth-first search based pathfinder algorithm */
 /* Sources: https://en.wikipedia.org/wiki/Breadth-first_search
@@ -30,6 +31,7 @@ int pathfinder(element **A, int N, char P, int sr, int sc){
             printf("? not enough memory!\n\n");
             return -100;
         }
+        for(int j = 0;j < N;j++) visited[i][j] = 0;
     }
     // Find shortest path (only number of steps)
     enqueue(&q, sr, sc);
@@ -100,69 +102,5 @@ int empty(qptr q){
     if (q == NULL)
         return 1;
     else
-        return 0;
-}
-
-/* Checking if the cells are adjacent with no wall between them */
-int connected(element **A, int ar, int ac, int br, int bc){
-    // Same row = horizontal neighbours
-    if(ar == br){
-        if(ac == bc + 1){ // Neighbour to the right
-            if(ar == 0){
-                if(A[ar][ac].w_or == 'V')
-                    return 0; // 0 = Not connected
-                else
-                    return 1; // 1 = Connected
-            }
-            else if(A[ar][ac].w_or == 'V' || A[ar - 1][ac].w_or == 'V')
-                return 0; 
-            else
-                return 1; 
-        }
-        else if(ac == bc -1){ // Neighbour to the left 
-            if(ar == 0){
-                if(A[br][bc].w_or == 'V')
-                    return 0;
-                else
-                    return 1;
-            }
-            else if(A[br][bc].w_or == 'V' || A[br - 1][bc].w_or == 'V')
-                return 0;
-            else 
-                return 1;
-        }
-        else // Not neighbours
-            return 0;
-    }
-    // Same collumn = vertical neighbours
-    else if(ac == bc){
-        if(ar == br + 1){ // Neighbour below
-            if(ac == 0){
-                if(A[ar][ac].w_or == 'H')
-                    return 0;
-                else
-                    return 1;
-            }
-            else if(A[ar][ac].w_or == 'H' || A[ar][ac - 1].w_or == 'H')
-                return 0;
-            else
-                return 1;
-        }
-        else if(ar == br - 1){ // Neighbour above
-            if(ac == 0){
-                if(A[br][bc].w_or == 'H')
-                    return 0;
-                else
-                    return 1;
-            }
-            if(A[br][bc].w_or == 'H' || A[br][bc -1].w_or == 'H')
-                return 0;
-            else
-                return 1;
-        }
-        else // Not neighbours
-            return 0;
-    }
-    else // Not neighbours
         return 0;
 }

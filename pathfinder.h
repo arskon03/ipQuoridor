@@ -9,5 +9,4 @@ struct Qnode{
 int empty(qptr q);
 void enqueue(qptr *q, int r, int c);
 void dequeue(qptr *q);
-int connected(element **A, int ar, int ac, int br, int bc);
 int pathfinder(element **A, int N, char P, int sr, int sc);
