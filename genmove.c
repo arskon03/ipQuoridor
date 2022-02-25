@@ -52,7 +52,7 @@ int pathfinder(element **A, int N, char P, int sr, int sc){
 
             // Discard cells that are visited or not connected
             if(visited[rr][cc]) continue;
-            if(!connected(r,c,rr,cc)) continue;
+            if(!connected(A,r,c,rr,cc)) continue;
 
             // Enqueue and mark as visited
             enqueue(&q, rr, cc);
@@ -95,10 +95,74 @@ void dequeue(qptr *ptr){
     }
 }
 
-/*Checking if queue is empty*/
+/* Checking if queue is empty */
 int empty(qptr q){
     if (q == NULL)
         return 1;
     else
+        return 0;
+}
+
+/* Checking if the cells are adjacent with no wall between them */
+int connected(element **A, int ar, int ac, int br, int bc){
+    // Same row = horizontal neighbours
+    if(ar == br){
+        if(ac == bc + 1){ // Neighbour to the right
+            if(ar == 0){
+                if(A[ar][ac].w_or == 'V')
+                    return 0; // 0 = Not connected
+                else
+                    return 1; // 1 = Connected
+            }
+            else if(A[ar][ac].w_or == 'V' || A[ar - 1][ac].w_or == 'V')
+                return 0; 
+            else
+                return 1; 
+        }
+        else if(ac == bc -1){ // Neighbour to the left 
+            if(ar == 0){
+                if(A[br][bc].w_or == 'V')
+                    return 0;
+                else
+                    return 1;
+            }
+            else if(A[br][bc].w_or == 'V' || A[br - 1][bc].w_or == 'V')
+                return 0;
+            else 
+                return 1;
+        }
+        else // Not neighbours
+            return 0;
+    }
+    // Same collumn = vertical neighbours
+    else if(ac == bc){
+        if(ar == br + 1){ // Neighbour below
+            if(ac == 0){
+                if(A[ar][ac].w_or == 'H')
+                    return 0;
+                else
+                    return 1;
+            }
+            else if(A[ar][ac].w_or == 'H' || A[ar][ac - 1].w_or == 'H')
+                return 0;
+            else
+                return 1;
+        }
+        else if(ar == br - 1){ // Neighbour above
+            if(ac == 0){
+                if(A[br][bc].w_or == 'H')
+                    return 0;
+                else
+                    return 1;
+            }
+            if(A[br][bc].w_or == 'H' || A[br][bc -1].w_or == 'H')
+                return 0;
+            else
+                return 1;
+        }
+        else // Not neighbours
+            return 0;
+    }
+    else // Not neighbours
         return 0;
 }
