@@ -206,7 +206,7 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
     }
     sprintf(action, "W%c%02d%c",A[i][j].V.x,A[i][j].V.y,o);
     tempS[*hSize - 1] = action;
-    tempS[*hSize] = '/0';
+    tempS[*hSize] = '\0';
     *history = tempS;
     return 0;
 }

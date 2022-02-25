@@ -93,7 +93,7 @@ int main(int argc, char **argv){             //board size and number of walls fo
                 }
                 temp[i] = input[i];
             }   
-        printf("%s\n",temp);                              //TEST (CHECK)
+        //printf("%s\n",temp);                              //TEST (CHECK)
         Panic = Command(temp,&A,&N,&WW,&WB,&Winner,&history,&hSize);  //interprets command based on the given string 
         //if (Panic == 1 || Panic == -1) break;
     }
@@ -150,10 +150,10 @@ int Command(char *input,element ***A,int *pN,int *pWW,int *pWB,char *pWinner,cha
         arg1 = strtok(NULL," \n");
         int times;
         if(arg1 == NULL)
-            times = 1;
+            times = pathfinder(*A,*pN,'W',*pN-1,5);
         else
             times = atoi(arg1);
-        printf("= \nundo %d\n\n",times);                     //TEST 
+        printf("= \nundo %d\n\n",times);               //TEST 
         /*if(times <= 0) printf("=\n\n");
         else if (times <= MP){                              //MP = moves played
             printf("=\n\n");

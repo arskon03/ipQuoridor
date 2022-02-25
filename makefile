@@ -1,5 +1,5 @@
-ipquoridor: main.o Commands.o genmove.o
-	gcc -o ipquoridor main.o Commands.o genmove.o
+main.exe: main.o Commands.o genmove.o
+	gcc -o main.exe main.o Commands.o genmove.o
 
 # make object files
 main.o: main.c
@@ -12,4 +12,4 @@ genmove.o: genmove.c
 	gcc -c genmove.c
 
 run:
-	./ipquoridor
+	./main.exe
