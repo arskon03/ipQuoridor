@@ -1,4 +1,4 @@
 #!/bin/sh
 
-gcc -o main.exe main.c Commands.c pathfinder.c utilities.c
+gcc  main.c Commands.c pathfinder.c utilities.c -o main.exe
 ./main.exe

@@ -107,7 +107,8 @@ int find(element **A, int N, char P,int *r, int *c){
             if(A[i][j].P == P){ 
                 *r = i;
                 *c = j;
+                return 1;
             }
         }
-    return 0; // Assuming player exists within A and character given is 'W' or 'B'
+    return 0; // P is invalid or player doesn't exist within A (probably won't be needed)
 }

@@ -182,18 +182,26 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
             return 0;
         }
     if(o == 'E'){
-        printf("? invalid syntax");
+        printf("? invalid syntax\n\n");
         return 0;
     }
     free(orientBuff);
     // Placing wall with orientation
     A[i][j].w_or = o;
     // Check if wall is blocking the path of Black
-    find(A,N,'B',&i,&j);
-    int Block = pathfinder(A,N,'B',0,0);
-    if(Block == -100) return 1; // Panic
-    else if(Block == -1){
+    int pr,pc;
+    int Path = pathfinder(A,N,'B');
+    if(Path == -100) return 1; // Malloc/find failed (PANIC)
+    else if(Path == -1){
         // If path is blocked remove the wall and the move is illegal
+        A[i][j].w_or = ' ';
+        printf("? illegal move\n\n");
+        return 0;
+    }
+    // Same for white player
+    Path = pathfinder(A,N,'W');
+    if(Path == -100) return 1; // Malloc/find failed (PANIC)
+    else if(Path == -1){
         A[i][j].w_or = ' ';
         printf("? illegal move\n\n");
         return 0;

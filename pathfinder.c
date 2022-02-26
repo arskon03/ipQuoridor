@@ -7,7 +7,9 @@
 /* This is a breadth-first search based pathfinder algorithm */
 /* Sources: https://en.wikipedia.org/wiki/Breadth-first_search
             https://www.youtube.com/watch?v=KiCBXu4P-2Y&ab_channel=WilliamFiset */
-int pathfinder(element **A, int N, char P, int sr, int sc){
+int pathfinder(element **A, int N, char P){
+    int sr,sc;  // Coordinates of the source
+    if(find(A,N,P,&sr,&sc) == 0) return -100; //P doesn't exist within A (PANIC)
     qptr q = NULL;
     int i,r,c,rr,cc;
     int dr[4] = {-1, +1, 0, 0}; // Direction vectors for rows
