@@ -6,7 +6,7 @@ struct Qnode{
     qptr next;
 };
 
-int pathfinder(element **A, int N, char P);
+int pathfinder(element **A, int N, char P, int sr, int sc);
 int empty(qptr q);
 void enqueue(qptr *q, int r, int c);
 void dequeue(qptr *q);

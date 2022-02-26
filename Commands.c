@@ -190,7 +190,7 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
     A[i][j].w_or = o;
     // Check if wall is blocking the path of Black
     int pr,pc;
-    int Path = pathfinder(A,N,'B');
+    int Path = pathfinder(A, N, 'B', -1, -1);
     if(Path == -100) return 1; // Malloc/find failed (PANIC)
     else if(Path == -1){
         // If path is blocked remove the wall and the move is illegal
@@ -199,7 +199,7 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
         return 0;
     }
     // Same for white player
-    Path = pathfinder(A,N,'W');
+    Path = pathfinder(A, N, 'W', -1, -1);
     if(Path == -100) return 1; // Malloc/find failed (PANIC)
     else if(Path == -1){
         A[i][j].w_or = ' ';
@@ -230,7 +230,7 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
 void undo(int times, element **A, int N, int *pWW, int *pWB, char *pWinner,char ***history, int *hSize){
     int i;
     for(i = 0;i < times;i++){
-
+        
     }
 }
 
@@ -562,7 +562,7 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, char***
     return 0;
 }
 
-char *genmove(element **A, int N, char *player, int *pWW, int *pWB, char*** history){
+void genmove(element **A, int N, char *player, int *pWW, int *pWB, char *pWinner, char*** history, int *hsize){
     char p,op;
     char *playerBuff = toLow(player);
     if (playerBuff == NULL)
@@ -593,22 +593,52 @@ char *genmove(element **A, int N, char *player, int *pWW, int *pWB, char*** hist
     int dc[4] = {0, 0, +1, -1}; // Direction vectors for collumns
     int i,j;
     int move; // This variable will represent the move chosen by minimax
+
+    // Find said player's position and call minimax to find the best move
     find(A,N,p,&i,&j);
-    minimax(i, j, 3, -1000000, 1000000, 1, possiblemoves, move);
+    minimax(A, i, j, 3, -1000000, 1000000, 1, possiblemoves, &move);
 
     // Interpret move and return the appropriate string 
-    char Command[20];
+    //char Command[20];
+    printf("%d\n",move);
     if(move <= 4){ // Move coordinates
-        i += dr[move-1];
-        j += dc[move -1];
+        
     }
     switch (move){
 
         case 1 :
+        case 2 :
+        case 3 :
+        case 4 :
+            i += dr[move - 1];
+            j += dc[move - 1];
+            // Make coordinates into a vertex and then into a string to pass on to playmove
             vertex v; 
             toVertex(N, &v, i, j);
-            sprintf(Command,"playmove %c %c%d", p, v.x, v.y);
-            return Command;
-        case 2 :
+            char *pos;
+            sprintf(pos,"%c%d", v.x, v.y);
+            printf("= %C%d\n\n", v.x, v.y);
+            playmove(A, N, &p, pos, pWinner, history, hsize);
+            return;
+
+        /* All other cases are wall placements so they are mixed together in one case
+           because their count is variable (depending on N) and not constant          */
+        default : 
+            // Find position of the wall based on the number of the move 
+            int r,c;
+            r = ((move - 4)/2)/(N-1); // Both are even there is no need for casting
+            c = ((move - 4)/2)%(N-1);
+
+            // Find orientation based on the number of the move
+            char o = (move%2) ? 'h' : 'v'; // Odd numbers for horizontal placement and even for vertical
+
+            // Make coordinates into a vertex and then into a string to pass on to playwall
+            vertex v; 
+            toVertex(N, &v, r, c);
+            char *pos;
+            sprintf(pos,"%c%d", v.x, v.y);
+            printf("= %C%d %c\n\n", v.x, v.y, o);
+            playwall(A, N, *pWW, *pWB, &p, pos, &o, history, hsize);
+            return;
     }
 }

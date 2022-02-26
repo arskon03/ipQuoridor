@@ -15,7 +15,7 @@ void clearboard(element **A, int N,char ***history,int *hSize);
 void showboard(element **A, int N, int WW, int WB);
 int playmove(element **A, int N, char *player, char *pos, char *pWinner, char*** history, int* hSize);
 int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, char *orientation, char*** history, int* hSize);
-char *genmove(element **A, int N, char *player, int *pWW, int *pWB, char*** history);
+void genmove(element **A, int N, char *player, int *pWW, int *pWB,char *pWinner, char*** history, int *hSize);
 
 
 /*typedef struct coord{

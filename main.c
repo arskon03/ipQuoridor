@@ -160,7 +160,7 @@ int Command(char *input,element ***A,int *pN,int *pWW,int *pWB,char *pWinner,cha
         if(times <= 0) printf("=\n\n");
         else if (times <= *hSize){   // hSize = moves/walls played
             printf("=\n\n");
-            //undo(times,P,N,pWW,pWB,pWinner,history,hSize);
+            //undo(times,*A,*pN,pWW,pWB,pWinner,history,hSize);
         }
         else printf("? cannot undo\n\n");
     }
@@ -236,8 +236,9 @@ int Command(char *input,element ***A,int *pN,int *pWW,int *pWB,char *pWinner,cha
         if(arg1 == NULL) //might need correction
             printf("? invalid syntax\n\n");
         else{
-            printf("= \ngenmove\n\n");                                     // Genmove determines the "best move" and returns a string with
-            //Command(genmove(A,*pN,arg1,pWW,pWB),A,pN,pWW,pWB,pWinner);   // the command that is passed on to a recursive call of the command function
+            printf("= \ngenmove\n\n");
+            // Generate best action(move or wall placement)                                     
+            genmove(A, *pN, arg1, pWW, pWB, pWinner, history, hSize);
         }
     }
 

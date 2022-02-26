@@ -6,14 +6,14 @@
 /* This is a minimax algorith with A-B pruning 
    Maximizing player starts as 1 (true) 
    Alpha starts as really small and beta really large */
-int minimax(int r, int c,int depth, int alpha, int beta, int maximizingplayer, int possiblemoves, int *move){ 
+int minimax(element **A, int r, int c,int depth, int alpha, int beta, int maximizingplayer, int possiblemoves, int *move){ 
     int i;
     int cr,cc; // Child position
     int eval;  //evaluation of current move
 
     // If depth has reached 0 process is over
     if(depth == 0)
-        return; //ADD EVALUATION
+        return evaluation(A, move, maximizingplayer, r, c);
     
     // Process for maximizing player
     if(maximizingplayer){
@@ -21,8 +21,12 @@ int minimax(int r, int c,int depth, int alpha, int beta, int maximizingplayer, i
         // For each hypothetical child (possible moves)
         for(i = 1; i <= possiblemoves;i++){
             // Maximizingplayer = false (other player's turn)
-            int eval = minimax(cr, cc, depth - 1, alpha, beta, 0, possiblemoves, i);
+            int eval = minimax(A, cr, cc, depth - 1, alpha, beta, 0, possiblemoves, move);
             max_eval = max(max_eval, eval);
+            // Changing max_eval means that a better move was found 
+            if(max_eval == eval && depth == 3) // We only care about the first level of the hypothetical tree(depth = 3)
+                *move = i;
+            // Prune if needed
             alpha = max(alpha,eval);
             if(beta <= alpha)
                 break;
@@ -35,12 +39,30 @@ int minimax(int r, int c,int depth, int alpha, int beta, int maximizingplayer, i
         int min_eval = 1000000;
         for(i = 1; i <= possiblemoves;i++){
             // Maximizing player = true (other player's turn)
-            eval = minimax(cr, cc, depth -1, alpha, beta, 1, possiblemoves, i); 
+            eval = minimax(A, cr, cc, depth -1, alpha, beta, 1, possiblemoves, move);
             min_eval = min(min_eval, eval);
+            // Prune if needed
             beta = min(beta, eval);
             if(beta <= alpha)
                 break;
         }
         return min_eval;
+    }
+}
+
+int evaluation(element **A, int move, int maximizingplayer, int r, int c){
+    int dr[4] = {-1, +1, 0, 0}; // Direction vectors for rows
+    int dc[4] = {0, 0, +1, -1}; // Direction vectors for collumns
+    // First 4 moves = move according to the vector
+    // The rest are wall placements at a certain position with certain orientation (both based on the number)
+    switch (move){
+        case 1 :
+        case 2 :
+        case 3 :
+        case 4 :
+            int i,j;
+            i = r + dr[move - 1]; //r,c are the current positions
+            j = c + dc[move - 1]; //i,j are the positions of the move
+            return pathfinder(A, N, 'W', r, c) - pathfinder(A, N, 'W', i, j) //NEED TO CHANGE PATHFINDER TO WORK WITH COORDINATES
     }
 }
