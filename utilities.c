@@ -112,3 +112,19 @@ int find(element **A, int N, char P,int *r, int *c){
         }
     return 0; // P is invalid or player doesn't exist within A (probably won't be needed)
 }
+
+/* Find tha maximum of two values */
+int max(int a, int b){
+    if(a > b)
+        return a;
+    else  // a <= b (if they are equal it doesn't matter which one is returned)
+        return b;
+}
+
+/* Find the minimum of two values */
+int min(int a, int b){
+    if (a < b)
+        return a;
+    else  // a >= b (if they are equal it doesn't matter which one is returned)
+        return b;
+}
