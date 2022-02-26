@@ -57,6 +57,14 @@ void toArray(int N, vertex* v, int* i, int* j)
     *j = v->x - 'A';
 }
 
+int abs(int n)
+{
+    if (n < 0)
+        return -1*n;
+    else
+        return n;
+}
+
 /* Checking if the cells are adjacent with no wall between them 
    If they are, player can move from point A(ar,ac) to point B(br,bc) */
 int connected(element **A, int ar, int ac, int br, int bc){

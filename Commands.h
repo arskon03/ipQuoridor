@@ -9,7 +9,7 @@ typedef struct Element{
     vertex V;          //values :"A3"/"B9" etc. = coordinates
 }element;
 
-void undo(int, element **A, int, int *, int *, char *);
+void undo(int times, element **A, int N, int *pWW, int *pWB, char *pWinner, char ***history, int *hSize);
 int boardsize(element ***A, int nValue, int *pN);
 void clearboard(element **A, int N,char ***history,int *hSize);
 void showboard(element **A, int N, int WW, int WB);

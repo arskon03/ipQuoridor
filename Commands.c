@@ -206,13 +206,13 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
         printf("? illegal move\n\n");
         return 0;
     }
-    //Removing 1 wall from said player if it exists
+    // Removing 1 wall from said player if it exists
     if(p == 'B' && *pWB > 0)
         (*pWB)--;
     else if(p == 'W' && *pWW > 0)
         (*pWW)--; 
     printf("= \n\n");
-    //Adding action to game history
+    // Adding action to game history
     char action[8]; // This string will hold the description of the action performed
     char** tempS = realloc(*history, (++*hSize) * sizeof(char*));
     if (tempS == NULL){
@@ -226,7 +226,15 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
     return 0;
 }
 
-// Add logic for walls/Change error message/Debug
+/* Undoes last move a given number of times */
+void undo(int times, element **A, int N, int *pWW, int *pWB, char *pWinner,char ***history, int *hSize){
+    int i;
+    for(i = 0;i < times;i++){
+
+    }
+}
+
+/* Executes the given move if its legal */
 int playmove(element **A, int N, char *player, char *pos, char *pWinner, char*** history, int* hSize)
 {
     // Make sure the move is not random words
@@ -247,7 +255,7 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, char***
     // Store in a char what player made the move
     char *playerBuff = toLow(player);
     if (playerBuff == NULL)
-        return 1;
+        return 1; // Malloc failed (PANIC)
 
     if (strcmp(playerBuff,"black") == 0 || strcmp(playerBuff,"b") == 0)
     {
@@ -553,11 +561,54 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, char***
 
     return 0;
 }
-//VALE printf("= \n\n") AN OLA PANE KALA KAI EKTELESTEI H KINISI
-int abs(int n)
-{
-    if (n < 0)
-        return -1*n;
-    else
-        return n;
+
+char *genmove(element **A, int N, char *player, int *pWW, int *pWB, char*** history){
+    char p,op;
+    char *playerBuff = toLow(player);
+    if (playerBuff == NULL)
+        return NULL; // Maloc failed (PANIC)
+
+    if (strcmp(playerBuff,"black") == 0 || strcmp(playerBuff,"b") == 0)
+    {
+        p = 'B';
+        op = 'W';
+    }     
+    else if (strcmp(playerBuff,"white") == 0 || strcmp(playerBuff,"w") == 0)
+    {
+        p = 'W';
+        op = 'B';
+    }
+    
+    // If char *player is invalid throw error
+    if (p == 'E')
+    {
+        printf("? invalid syntax\n\n");
+        return 0;
+    }
+    free(playerBuff);
+
+    // Possible moves = 4(max 4 directions to move) + every possible wall placement
+    int possiblemoves = 4 + (N-1)*(N-1)*2;
+    int dr[4] = {-1, +1, 0, 0}; // Direction vectors for rows
+    int dc[4] = {0, 0, +1, -1}; // Direction vectors for collumns
+    int i,j;
+    int move; // This variable will represent the move chosen by minimax
+    find(A,N,p,&i,&j);
+    minimax(i, j, 3, -1000000, 1000000, 1, possiblemoves, move);
+
+    // Interpret move and return the appropriate string 
+    char Command[20];
+    if(move <= 4){ // Move coordinates
+        i += dr[move-1];
+        j += dc[move -1];
+    }
+    switch (move){
+
+        case 1 :
+            vertex v; 
+            toVertex(N, &v, i, j);
+            sprintf(Command,"playmove %c %c%d", p, v.x, v.y);
+            return Command;
+        case 2 :
+    }
 }
