@@ -136,3 +136,43 @@ int min(int a, int b){
     else  // a >= b (if they are equal it doesn't matter which one is returned)
         return b;
 }
+
+/* Interpret's and executes move based by calling the proper function */
+int execute(element **A, int N, int move, int i, int j, int *pWW, int *pWB, char p, char *pWinner, char ***history, int *hSize){
+    int dr[4] = {-1, +1, 0, 0}; // Direction vectors for rows
+    int dc[4] = {0, 0, +1, -1}; // Direction vectors for collumns
+    printf("%d\n",move);
+    if(move <= 4){
+        i += dr[move - 1];
+        j += dc[move - 1];
+        // Make coordinates into a vertex and then into a string to pass on to playmove
+        vertex v; 
+        toVertex(N, &v, i, j);
+        char *pos;
+        sprintf(pos,"%c%d", v.x, v.y);
+        printf("= %C%d\n\n", v.x, v.y);
+        playmove(A, N, &p, pos, pWinner, history, hSize);
+        return 0;
+    }
+
+    /* All other cases are wall placements so they are mixed together in one case
+        because their count is variable (depending on N) and not constant          */
+    else{
+        // Find position of the wall based on the number of the move 
+        int r,c;
+        r = ((move - 4)/2)/(N-1); // Both are even there is no need for casting
+        c = ((move - 4)/2)%(N-1);
+
+        // Find orientation based on the number of the move
+        char o = (move%2) ? 'h' : 'v'; // Odd numbers for orientation placement and even for vertical
+
+        // Make coordinates into a vertex and then into a string to pass on to playwall
+        vertex v; 
+        toVertex(N, &v, r, c);
+        char *pos;
+        sprintf(pos,"%c%d", v.x, v.y);
+        printf("= %C%d %c\n\n", v.x, v.y, o);
+        playwall(A, N, *pWW, *pWB, &p, pos, &o, history, hSize);
+        return 0;
+    }
+}

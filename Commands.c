@@ -562,6 +562,7 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, char***
     return 0;
 }
 
+/* Calls minimax with the apropriate parameters and executes the move minimax chooses */
 void genmove(element **A, int N, char *player, int *pWW, int *pWB, char *pWinner, char*** history, int *hsize){
     char p,op;
     char *playerBuff = toLow(player);
@@ -589,56 +590,15 @@ void genmove(element **A, int N, char *player, int *pWW, int *pWB, char *pWinner
 
     // Possible moves = 4(max 4 directions to move) + every possible wall placement
     int possiblemoves = 4 + (N-1)*(N-1)*2;
-    int dr[4] = {-1, +1, 0, 0}; // Direction vectors for rows
-    int dc[4] = {0, 0, +1, -1}; // Direction vectors for collumns
     int i,j;
     int move; // This variable will represent the move chosen by minimax
 
     // Find said player's position and call minimax to find the best move
     find(A,N,p,&i,&j);
-    minimax(A, i, j, 3, -1000000, 1000000, 1, possiblemoves, &move);
+    minimax(A, N, i, j, 3, -1000000, 1000000, 1, possiblemoves, &move);
 
-    // Interpret move and return the appropriate string 
-    //char Command[20];
-    printf("%d\n",move);
-    if(move <= 4){ // Move coordinates
-        
-    }
-    switch (move){
-
-        case 1 :
-        case 2 :
-        case 3 :
-        case 4 :
-            i += dr[move - 1];
-            j += dc[move - 1];
-            // Make coordinates into a vertex and then into a string to pass on to playmove
-            vertex v; 
-            toVertex(N, &v, i, j);
-            char *pos;
-            sprintf(pos,"%c%d", v.x, v.y);
-            printf("= %C%d\n\n", v.x, v.y);
-            playmove(A, N, &p, pos, pWinner, history, hsize);
-            return;
-
-        /* All other cases are wall placements so they are mixed together in one case
-           because their count is variable (depending on N) and not constant          */
-        default : 
-            // Find position of the wall based on the number of the move 
-            int r,c;
-            r = ((move - 4)/2)/(N-1); // Both are even there is no need for casting
-            c = ((move - 4)/2)%(N-1);
-
-            // Find orientation based on the number of the move
-            char o = (move%2) ? 'h' : 'v'; // Odd numbers for horizontal placement and even for vertical
-
-            // Make coordinates into a vertex and then into a string to pass on to playwall
-            vertex v; 
-            toVertex(N, &v, r, c);
-            char *pos;
-            sprintf(pos,"%c%d", v.x, v.y);
-            printf("= %C%d %c\n\n", v.x, v.y, o);
-            playwall(A, N, *pWW, *pWB, &p, pos, &o, history, hsize);
-            return;
-    }
+    // Interpret move and call the proper function
+    execute(A, N, move, i, j, pWW, pWB, p, pWinner, history, hSize); // Function exists in utilities.c
+    return;
 }
+

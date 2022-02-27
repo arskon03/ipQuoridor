@@ -7,3 +7,4 @@ int connected(element **A, int ar, int ac, int br, int bc); //1 if they are conn
 int find(element **A, int N, char P, int *r, int *c);
 int max(int a, int b);
 int min(int a, int b);
+int execute(element **A, int N, int move, int i, int j, int *pWW, int *pWB, char p, char *pWinner, char ***history, int *hSize);
