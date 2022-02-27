@@ -6,14 +6,17 @@
 /* This is a minimax algorith with A-B pruning
    Maximizing player starts as 1 (true)
    Alpha starts as really small and beta really large */
-int minimax(element **A, int N, int *pWW, int *pWB, int*pWinner, int r, int c,int depth,
-            int alpha, int beta, int maximizingplayer, int possiblemoves, int *move, char ***history, int *hSize){ 
+int minimax(element **A, int N, char p, int *pWW, int *pWB, int*pWinner,int depth, int alpha, int beta,
+            int maximizingplayer, int possiblemoves, int *move, char ***history, int *hSize) { 
     int i;
-    int cr,cc; // Child position
+    int r,c; // Child position
     int eval;  //evaluation of current move
+    char op = (p = 'W') ? 'B' : 'W'; // op = minimizing player
     
     // If depth has reached 0 process is over
     if(depth == 0)
+        // Find said player's position (should always be maximizing player since depth start's as 3)
+        find(A, N, (maximizingplayer) ? p : op, &r, &c);
         return evaluation(A, N, move, maximizingplayer, r, c);
     
     // Process for maximizing player
@@ -22,15 +25,19 @@ int minimax(element **A, int N, int *pWW, int *pWB, int*pWinner, int r, int c,in
         // For each hypothetical child (possible moves)
         for(i = 1; i <= possiblemoves;i++){
             // Execute and then undo the move so the next minimax call can have the proper board configuration
-            // Only for the first level of the hypothetical tree
-            if(depth == 3)//execute(A, N, i, cr, cc, pWW, pWB, 'W', pWinner, history, hSize)  //ADD VARIABLES TO MINIMAX
+            // Only for the first level of the hypothetical tree (Simulating the actions)
+            if(depth == 3){
+                // Find maximizing player's position
+                find(A, N, p, &r, &c);  // p is the maximizing player
+                execute(A, N, i, r, c, pWW, pWB, p, pWinner, history, hSize,0);
+            }
 
             // Maximizingplayer = false (other player's turn)
-            eval = minimax(A, N, pWW, pWB, pWinner, cr, cc, depth - 1, alpha, beta, 0, possiblemoves, move, history, hSize);
+            eval = minimax(A, N, p, pWW, pWB, pWinner, depth - 1, alpha, beta, 0, possiblemoves, move, history, hSize);
             max_eval = max(max_eval, eval);
 
-            // Changing max_eval means that a better move was found 
-            if(max_eval == eval && depth == 3) // We only care about the first level of the hypothetical tree(depth = 3)
+            // Changing max_eval means that a better move was found
+            if(max_eval == eval && depth == 3) // We only care about the first level of the hypothetical tree(depth == 3)
                 *move = i;
             
             // Undo the action executed earlier so the board returns to its original configuration
@@ -48,15 +55,18 @@ int minimax(element **A, int N, int *pWW, int *pWB, int*pWinner, int r, int c,in
     else{
         int min_eval = 1000000;
         for(i = 1; i <= possiblemoves;i++){
+            // Find minimizing player's position
+            find(A, N, op, &r, &c);
+
             // Same as above, for the second level of the tree which is the only level of the minimizing player
-            if(depth == 3)//execute(A, N, i, cr, cc, pWW, pWB, 'W', pWinner, history, hSize)  //ADD VARIABLES TO MINIMAX
+            execute(A, N, i, r, c, pWW, pWB, 'W', pWinner, history, hSize, 0);
 
             // Maximizing player = true (other player's turn)
-            eval = minimax(A, N, pWW, pWB, pWinner, cr, cc, depth -1, alpha, beta, 1, possiblemoves, move, history, hSize);
+            eval = minimax(A, N, p, pWW, pWB, pWinner, depth -1, alpha, beta, 1, possiblemoves, move, history, hSize);
             min_eval = min(min_eval, eval);
 
-            // Undo
-            if(depth == 3) undo(1, A, N, pWW, pWB, pWinner, history, hSize);
+            // Return to original configuration
+            undo(1, A, N, pWW, pWB, pWinner, history, hSize);
 
             // Prune if needed
             beta = min(beta, eval);
@@ -81,6 +91,6 @@ int evaluation(element **A, int N, int move, int maximizingplayer, int r, int c)
         return pathfinder(A, N, 'W', r, c) - pathfinder(A, N, 'W', i, j);  //ADD PLAYER TO MINIMAX
     }
     else{  // Wall placement
-
+        
     }
 }
