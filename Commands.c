@@ -563,7 +563,7 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, char***
 }
 
 /* Calls minimax with the apropriate parameters and executes the move minimax chooses */
-void genmove(element **A, int N, char *player, int *pWW, int *pWB, char *pWinner, char*** history, int *hsize){
+void genmove(element **A, int N, char *player, int *pWW, int *pWB, char *pWinner, char*** history, int *hSize){
     char p,op;
     char *playerBuff = toLow(player);
     if (playerBuff == NULL)
