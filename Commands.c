@@ -77,7 +77,7 @@ int boardsize(element ***A, int nValue, int *pN){
 }
 
 /* Walls cleared/Players at starting positions/Game history empty */
-void clearboard(element **A, int N, char ***history, int *hSize){
+void clearboard(element **A, int N, node **history, int *hSize){
     int i,j;
     // Board Configuration at the start of the game
     for(i = 0;i < N;i++)
@@ -95,13 +95,15 @@ void clearboard(element **A, int N, char ***history, int *hSize){
             A[i][j].V.y = N - i;*/
         }
     // Game history = empty
-    free(*history); 
-    *history = NULL;
+    for(i = 0; i < *hSize; i++)
+    {
+        remove_at_start(*history);
+    }
     *hSize = 0;
 }
 
 /*Places wall on the right position with the right orientation*/
-int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, char *orientation, char*** history, int* hSize){
+int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, char *orientation, node **history, int* hSize){
     // Make sure wall position is valid
     /*if (strlen(pos) > 3)
     {
@@ -212,30 +214,92 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
     else if(p == 'W' && *pWW > 0)
         (*pWW)--; 
     printf("= \n\n");
+
     // Adding action to game history
     char action[8]; // This string will hold the description of the action performed
-    char** tempS = realloc(*history, (++*hSize) * sizeof(char*));
-    if (tempS == NULL){
+    sprintf(action, "W%c%02d%c%c",A[i][j].V.x,A[i][j].V.y,o, p);
+
+    int check = insert_at_start(history, action);
+    if (check == 0){
         printf("? not enough memory!\n\n");
         return 1;
     }
-    sprintf(action, "W%c%02d%c%c",A[i][j].V.x,A[i][j].V.y,o, p);
-    tempS[*hSize - 1] = action;
-    //tempS[*hSize] = '\0';
-    *history = tempS;
+    ++*hSize;
+
     return 0;
 }
 
 /* Undoes last move a given number of times */
-void undo(int times, element **A, int N, int *pWW, int *pWB, char *pWinner,char ***history, int *hSize){
-    int i;
-    for(i = 0;i < times;i++){
-        
+int undo(int times, element **A, int N, int *pWW, int *pWB, char *pWinner,node **history, int *hSize){
+    
+    for (int i = 0; i < *hSize; i++)
+    {
+        char type = (*history)->move[0];
+
+        // Decodes the move and undoes its action one at a time
+        if (type == 'M')
+        {
+            char sLet, tLet, player;
+            int sNum, tNum;
+
+            sscanf((*history)->move, "%c%c%d>%c%d%c", &type, &sLet, &sNum, &tLet, &tNum, &player);
+
+            vertex start, target;
+            start.x = sLet;
+            start.y = sNum;
+            target.x = tLet;
+            target.y = tNum;
+
+            int si, sj, ti, tj;
+            toArray(N, &start, &si, &sj);
+            toArray(N, &target, &ti, &tj);
+
+            if(A[ti][tj].P != player)
+            {
+                printf("? Didn't find player to undo\n\n");
+                return 1;
+            }
+
+            A[ti][tj].P = ' ';
+            A[si][sj].P = player;
+        }
+        else
+        {
+            char tLet, player, orient;
+            int tNum;
+            sscanf((*history)->move, "%c%c%d%c%c", &type, &tLet, &tNum, &orient, &player);
+
+            vertex target;
+            target.x = tLet;
+            target.y = tNum;
+
+            int ti, tj;
+            toArray(N, &target, &ti, &tj);
+
+            if(A[ti][tj].w_or != orient)
+            {
+                printf("? Didn't find correct wall to undo\n\n");
+                return 1;
+            }
+
+            A[ti][tj].w_or = ' ';
+            if(player == 'W')
+                (*pWW)++;
+            else
+                *(pWB)++;
+        }
+
+        // At the end of the loop remove the move that just got undone
+        remove_at_start(history);
     }
+    // Decrease the size of the history by times
+    *hSize -= times;
+    
+    return 0;
 }
 
 /* Executes the given move if its legal */
-int playmove(element **A, int N, char *player, char *pos, char *pWinner, char*** history, int* hSize)
+int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** history, int* hSize)
 {
     // Make sure the move is not random words
     /*
@@ -366,39 +430,6 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, char***
         ind++;
     }
     
-    /*
-    if (i > 0)
-        if (A[i - 1][j].P == p)
-        {
-            prevI = i-1;
-            prevJ = j;
-        }
-        else if(A[i - 1][j].P == op)
-        {
-
-        }
-    
-    if (i < N - 1)
-        if (A[i + 1][j].P == p)
-        {
-            prevI = i+1;
-            prevJ = j;
-        }
-    
-    if (j > 0)
-        if (A[i][j - 1].P == p)
-        {
-            prevI = i;
-            prevJ = j-1;
-        }
-    
-    if (j < N - 1)
-        if (A[i][j + 1].P == p)
-        {
-            prevI = i;
-            prevJ = j+1;
-        }
-    */
     //printf("prevI: %d, prevJ: %d\n", prevI, prevJ);
     // If you didn't find somewhere adjascent then it is an illegal move
     if (found == -1)
@@ -414,7 +445,10 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, char***
     }
     //printf("prevI: %d, prevJ: %d\n", prevI, prevJ);
 
-    // If you found the oponent then search the adjascent vertex in the direction of the move. If there isn't the player there, then illegal
+    /* If you found the oponent then search the adjascent vertexes to find the player. If you cannot, then it is an illegal move. If you find him, then check the
+     * vertec in the direction of the target to the opponent. if the player is not there, there, then check whether or not there is a wall or the end of the board.
+     * If not then it is an illegal move. If yes then check whether the player is on the right or left of the oppenet, relative to his position. If he is  not then
+     * it is an illegal move */
     if (found == 2)
     {
         found = 0;
@@ -479,54 +513,6 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, char***
             prevI = pI;
             prevJ = pJ;
         }
-        /*
-        if (checkI && checkJ)
-        {
-            if (A[prevI - diffI][prevJ - diffJ].P == p)
-            {
-                prevI -= diffI;
-                prevJ -= diffJ;
-                found = 1;
-            }
-        }
-        int pI = 0, pJ = 0;
-        //find(A, N, p, &pI, &pJ);
-
-        if(found == -1 && !connected(A, prevI, prevJ, i, j)) // In genmove.h
-        {
-            int vcoord = 0;
-            found = 0;
-            ind = 1;
-
-            if (diffI == 0)
-                vcoord = prevI;
-            else
-                vcoord = prevJ;
-
-            while (!found)
-            {
-                int tempI = (vcoord == prevI) ? ((ind == 1 && prevI > 0) ? prevI - 1 : ((prevI < N - 1) ? prevI + 1 : prevI)) : prevI;
-                int tempJ = (vcoord == prevJ) ? ((ind == 1 && prevJ > 0) ? prevJ - 1 : ((prevJ < N - 1) ? prevJ + 1 : prevJ)) : prevJ;
-                printf("prevI: %d, prevJ: %d, tempI: %d, tempJ: %d\n", prevI, prevJ, tempI, tempJ);
-
-                if (A[tempI][tempJ].P == p)
-                {
-                    prevI = tempI;
-                    prevJ = tempJ;
-                    found = 1;
-                }
-
-                if (ind == 2 && found == 0)
-                    found = -1;
-            }
-        }
-        
-        if (found == -1)
-        {
-            printf("? illegal move\n\n");
-            return 0;
-        }
-        */
     }
 
     // Move the player
@@ -541,16 +527,13 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, char***
         
         sprintf(move, "%c%c%02d>%c%02d%c", type, prevV.x, prevV.y, v.x, v.y, p);
 
-        char** temp = realloc(*history, (++*hSize) * sizeof(char*));
-        if (temp == NULL)
+        int check = insert_at_start(history, move);
+        if (check == 0)
         {
             printf("? not enough memory!\n\n");
             return 1;
         }
-
-        temp[*hSize - 1] = move;
-    
-        *history = temp;
+        ++*hSize;
     }
 
     // If player is white and is at the end of the board or is black and its at the start, then we have a winner
@@ -563,7 +546,7 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, char***
 }
 
 /* Calls minimax with the apropriate parameters and executes the move minimax chooses */
-void genmove(element **A, int N, char *player, int *pWW, int *pWB, char *pWinner, char*** history, int *hSize){
+int genmove(element **A, int N, char *player, int *pWW, int *pWB, char *pWinner, node **history, int *hSize){
     char p,op;
     char *playerBuff = toLow(player);
     if (playerBuff == NULL)
@@ -593,11 +576,11 @@ void genmove(element **A, int N, char *player, int *pWW, int *pWB, char *pWinner
     int i,j;
     int move; // This variable will represent the move chosen by minimax
 
-    // Call minimax to find the best move
-    minimax(A, N, p, pWW, pWB, pWinner, 3, -1000000, 1000000, 1, possiblemoves, &move, history, hSize);
+    // Call minimax to find the best move (White = maximizing player, Black = minimizing player)
+    // We call the function starting with 1 or 0 for the maximizing player depending on p
+    minimax(A, N, pWW, pWB, pWinner, 3, -1000000, 1000000, (p == 'W') ? 1 : 0, possiblemoves, &move, history, hSize);
 
     // Interpret move and call the proper function
-    execute(A, N, move, i, j, pWW, pWB, p, pWinner, history, hSize, 1); // Function exists in utilities.c
-    return;
+    return execute(A, N, move, i, j, pWW, pWB, p, pWinner, history, hSize, 1); // Function exists in utilities.c
 }
 

@@ -4,6 +4,28 @@
 #include "Commands.h"
 #include "utilities.h"
 
+int insert_at_start(node **start, char *string)
+{
+    node *temp = *start;
+    *start = malloc(sizeof(node));
+    if (*start == NULL)
+    {
+        *start = temp;
+        return 0;
+    }
+
+    (*start)->move = string;
+    (*start)->nextNode = temp;
+
+    return 1;
+}
+
+void remove_at_start(node** start)
+{
+    node *next = (*start)->nextNode;
+    free(*start);
+    *start = next;
+}
 
 // Convert a string to all lowercase
 char* toLow(char* string)
@@ -139,7 +161,7 @@ int min(int a, int b){
 
 /* Interpret's and executes move based by calling the proper function 
    The genmove variable exists to inform the function that it was called by genmove */
-int execute(element **A, int N, int move, int i, int j, int *pWW, int *pWB, char p, char *pWinner, char ***history, int *hSize, int gemomve){
+int execute(element **A, int N, int move, int i, int j, int *pWW, int *pWB, char p, char *pWinner, node **history, int *hSize, int gemomve){
     int dr[4] = {-1, +1, 0, 0}; // Direction vectors for rows
     int dc[4] = {0, 0, +1, -1}; // Direction vectors for collumns
     printf("%d\n",move);
@@ -147,7 +169,7 @@ int execute(element **A, int N, int move, int i, int j, int *pWW, int *pWB, char
         i += dr[move - 1];
         j += dc[move - 1];
         // Make coordinates into a vertex and then into a string to pass on to playmove
-        vertex v; 
+        vertex v;
         toVertex(N, &v, i, j);
         char *pos;
         sprintf(pos,"%c%d", v.x, v.y);
@@ -165,10 +187,10 @@ int execute(element **A, int N, int move, int i, int j, int *pWW, int *pWB, char
         c = ((move - 4)/2)%(N-1);
 
         // Find orientation based on the number of the move
-        char o = (move%2) ? 'h' : 'v'; // Odd numbers for orientation placement and even for vertical
+        char o = (move%2) ? 'h' : 'v'; // Odd numbers for horizontal placement and even for vertical
 
         // Make coordinates into a vertex and then into a string to pass on to playwall
-        vertex v; 
+        vertex v;
         toVertex(N, &v, r, c);
         char *pos;
         sprintf(pos,"%c%d", v.x, v.y);

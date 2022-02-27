@@ -5,11 +5,12 @@
 #include "pathfinder.h"
 #include "utilities.h"
 
-int Command(char *input, element ***A, int *pN, int *pWW, int *pWB, char *pWinner,char ***history,int *hSize);     //0 = proper execution, 1 = Panic situation
+int Command(char *input, element ***A, int *pN, int *pWW, int *pWB, char *pWinner,node **history,int *hSize);     //0 = proper execution, 1 = Panic situation
 
 int main(void){
     int N = 0, WW, WB = 10, i, Panic = 0,hSize;
-    char Winner = '\0', **history = NULL, input[256]; // History is NULL so clearboard can free it
+    char Winner = '\0', input[256]; // History is NULL so clearboard can free it
+    node *history = NULL;
     element **A = NULL; // A will hold player positions/Wall positions/orientation and the coordinates as vertices
     /*if(argc == 1){      
         N = 9;
@@ -106,7 +107,7 @@ int main(void){
     return 0;
 }
 
-int Command(char *input,element ***A,int *pN,int *pWW,int *pWB,char *pWinner,char ***history,int *hSize){
+int Command(char *input,element ***A,int *pN,int *pWW,int *pWB,char *pWinner,node **history,int *hSize){
     if(input == NULL) return 1; // PANIC 
 
     char *com = NULL,*arg1 = NULL,*arg2 = NULL,*arg3 = NULL;  // Tokens extracted from original string                                       
@@ -160,7 +161,7 @@ int Command(char *input,element ***A,int *pN,int *pWW,int *pWB,char *pWinner,cha
         if(times <= 0) printf("=\n\n");
         else if (times <= *hSize){   // hSize = moves/walls played
             printf("=\n\n");
-            //undo(times,*A,*pN,pWW,pWB,pWinner,history,hSize);
+            if(undo(times,*A,*pN,pWW,pWB,pWinner,history,hSize)) return 1; // PANIC
         }
         else printf("? cannot undo\n\n");
     }
@@ -238,7 +239,7 @@ int Command(char *input,element ***A,int *pN,int *pWW,int *pWB,char *pWinner,cha
         else{
             printf("= \ngenmove\n\n");
             // Generate best action(move or wall placement)                                     
-            genmove(A, *pN, arg1, pWW, pWB, pWinner, history, hSize);
+            genmove(*A, *pN, arg1, pWW, pWB, pWinner, history, hSize);
         }
     }
 
