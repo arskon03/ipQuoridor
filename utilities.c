@@ -4,29 +4,6 @@
 #include "Commands.h"
 #include "utilities.h"
 
-int insert_at_start(node **start, char *string)
-{
-    node *temp = *start;
-    *start = malloc(sizeof(node));
-    if (*start == NULL)
-    {
-        *start = temp;
-        return 0;
-    }
-
-    (*start)->move = string;
-    (*start)->nextNode = temp;
-
-    return 1;
-}
-
-void remove_at_start(node** start)
-{
-    node *next = (*start)->nextNode;
-    free(*start);
-    *start = next;
-}
-
 // Convert a string to all lowercase
 char* toLow(char* string)
 {
@@ -195,7 +172,7 @@ int execute(element **A, int N, int move, int i, int j, int *pWW, int *pWB, char
         char *pos;
         sprintf(pos,"%c%d", v.x, v.y);
         if(genmove) printf("= %C%d %c\n\n", v.x, v.y, o);
-        playwall(A, N, *pWW, *pWB, &p, pos, &o, history, hSize);
+        playwall(A, N, pWW, pWB, &p, pos, &o, history, hSize);
         return 0;
     }
 }

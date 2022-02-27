@@ -1,6 +1,9 @@
 {
     "files.associations": {
         "stdio.h": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "commands.h": "c",
+        "pathfinder.h": "c",
+        "utilities.h": "c"
     }
 }

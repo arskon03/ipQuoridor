@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "Commands.h"
-#include "pathfinder.h"
 #include "utilities.h"
+#include "pathfinder.h"
 
 int Command(char *input, element ***A, int *pN, int *pWW, int *pWB, char *pWinner,node **history,int *hSize);     //0 = proper execution, 1 = Panic situation
 

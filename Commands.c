@@ -2,8 +2,31 @@
 #include <stdlib.h>
 #include <string.h>
 #include "Commands.h"
-#include "pathfinder.h"
 #include "utilities.h"
+#include "pathfinder.h"
+
+int insert_at_start(node **start, char *string)
+{
+    node *temp = *start;
+    *start = malloc(sizeof(node));
+    if (*start == NULL)
+    {
+        *start = temp;
+        return 0;
+    }
+
+    (*start)->move = string;
+    (*start)->nextNode = temp;
+
+    return 1;
+}
+
+void remove_at_start(node** start)
+{
+    node *next = (*start)->nextNode;
+    free(*start);
+    *start = next;
+}
 
 /* I don't know how to make this more readable, im sorry */
 void showboard(element **A,int N,int WW,int WB){
@@ -97,7 +120,7 @@ void clearboard(element **A, int N, node **history, int *hSize){
     // Game history = empty
     for(i = 0; i < *hSize; i++)
     {
-        remove_at_start(*history);
+        remove_at_start(history);
     }
     *hSize = 0;
 }
@@ -225,16 +248,19 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
         return 1;
     }
     ++*hSize;
+    printf("%s\nsize: %d\n", (*history)->move, *hSize);
 
     return 0;
 }
 
 /* Undoes last move a given number of times */
-int undo(int times, element **A, int N, int *pWW, int *pWB, char *pWinner,node **history, int *hSize){
+int undo(int times, element **A, int N, int *pWW, int *pWB, char *pWinner, node **history, int *hSize){
     
     for (int i = 0; i < *hSize; i++)
     {
+        printf("move: %s|\n", (*history)->move);
         char type = (*history)->move[0];
+        printf("type: %c|\n", type);
 
         // Decodes the move and undoes its action one at a time
         if (type == 'M')
@@ -243,6 +269,7 @@ int undo(int times, element **A, int N, int *pWW, int *pWB, char *pWinner,node *
             int sNum, tNum;
 
             sscanf((*history)->move, "%c%c%d>%c%d%c", &type, &sLet, &sNum, &tLet, &tNum, &player);
+            printf("yay3\n");
 
             vertex start, target;
             start.x = sLet;
@@ -262,12 +289,14 @@ int undo(int times, element **A, int N, int *pWW, int *pWB, char *pWinner,node *
 
             A[ti][tj].P = ' ';
             A[si][sj].P = player;
+            printf("yay1\n");
         }
         else
         {
             char tLet, player, orient;
             int tNum;
             sscanf((*history)->move, "%c%c%d%c%c", &type, &tLet, &tNum, &orient, &player);
+            printf("yay5\n");
 
             vertex target;
             target.x = tLet;
@@ -287,6 +316,8 @@ int undo(int times, element **A, int N, int *pWW, int *pWB, char *pWinner,node *
                 (*pWW)++;
             else
                 *(pWB)++;
+
+            printf("yay4\n");
         }
 
         // At the end of the loop remove the move that just got undone
@@ -369,20 +400,20 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** 
     // If outside range then it is an illegal move
     if(v.y <= 0 || v.y > N)
     {
-        printf("? illegal move\n\n");
+        printf("? illegal move1\n\n");
         return 0;
     }
     toArray(N, &v, &i, &j);
     if( j < 0 || j >= N )
     {
-        printf("? illegal move\n\n");
+        printf("? illegal move2\n\n");
         return 0;
     }
 
     // If vertex is not empty then is is an illegal move
     if(A[i][j].P != ' ')
     {
-        printf("? illegal move\n\n");
+        printf("? illegal move3\n\n");
         return 0;
     }
 
@@ -435,12 +466,12 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** 
     if (found == -1)
     {
         //printf("123\n"); //problem is here
-        printf("? illegal move\n\n");
+        printf("? illegal move4\n\n");
         return 0;
     }
     if (!connected(A, prevI, prevJ, i, j))
     {
-        printf("? illegal move\n\n");
+        printf("? illegal move5\n\n");
         return 0;
     }
     //printf("prevI: %d, prevJ: %d\n", prevI, prevJ);
@@ -471,13 +502,13 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** 
 
         if (!found)
         {
-            printf("? illegal move\n\n");
+            printf("? illegal move6\n\n");
             return 0;
         }
 
         if (!connected(A, pI, pJ, prevI, prevJ))
         {
-            printf("? illegal move\n\n");
+            printf("? illegal move7\n\n");
             return 0;
         }
 
@@ -506,7 +537,7 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** 
 
             if (!bCheck)
             {
-                printf("? illegal move\n\n");
+                printf("? illegal move8\n\n");
                 return 0;
             }
 
@@ -534,6 +565,7 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** 
             return 1;
         }
         ++*hSize;
+        printf("%s\nsize: %d\n", (*history)->move, *hSize);
     }
 
     // If player is white and is at the end of the board or is black and its at the start, then we have a winner
@@ -550,7 +582,7 @@ int genmove(element **A, int N, char *player, int *pWW, int *pWB, char *pWinner,
     char p,op;
     char *playerBuff = toLow(player);
     if (playerBuff == NULL)
-        return NULL; // Maloc failed (PANIC)
+        return 1; // Maloc failed (PANIC)
 
     if (strcmp(playerBuff,"black") == 0 || strcmp(playerBuff,"b") == 0)
     {

@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "Commands.h"
-#include "pathfinder.h"
 #include "utilities.h"
+#include "pathfinder.h"
 
 /* This is a breadth-first search based pathfinder algorithm */
 /* Sources: https://en.wikipedia.org/wiki/Breadth-first_search

@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include "Commands.h"
-#include "pathfinder.h"
 #include "utilities.h"
+#include "pathfinder.h"
 
 /* This is a minimax algorith with A-B pruning
    Maximizing player starts as 1 (true)
    Alpha starts as really small and beta really large */
-int minimax(element **A, int N, int *pWW, int *pWB, int*pWinner,int depth, int alpha, int beta,
+int minimax(element **A, int N, int *pWW, int *pWB, char *pWinner,int depth, int alpha, int beta,
             int maximizingplayer, int possiblemoves, int *move, node **history, int *hSize) { 
     int i;
     int r,c;    // Child position

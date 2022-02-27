@@ -1,11 +1,3 @@
-typedef struct Node{
-    char *move;
-    struct Node *nextNode;
-}node;
-
-int insert_at_start(node** start, char* string);
-void remove_at_start(node** start);
-
 char* toLow(char* string);
 char* toUpper(char* string);
 void toVertex(int N, vertex* v, int i, int j);     // Returns 0 if failed

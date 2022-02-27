@@ -1,3 +1,8 @@
+typedef struct Node{
+    char *move;
+    struct Node *nextNode;
+}node;
+
 typedef struct Vertex{
      char x;
      int y;
@@ -9,6 +14,9 @@ typedef struct Element{
     vertex V;          //values :"A3"/"B9" etc. = coordinates
 }element;
 
+
+int insert_at_start(node** start, char* string);
+void remove_at_start(node** start);
 int undo(int times, element **A, int N, int *pWW, int *pWB, char *pWinner, node **history, int *hSize);
 int boardsize(element ***A, int nValue, int *pN);
 void clearboard(element **A, int N,node **history,int *hSize);
