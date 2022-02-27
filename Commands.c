@@ -595,10 +595,10 @@ void genmove(element **A, int N, char *player, int *pWW, int *pWB, char *pWinner
 
     // Find said player's position and call minimax to find the best move
     find(A,N,p,&i,&j);
-    minimax(A, N, i, j, 3, -1000000, 1000000, 1, possiblemoves, &move);
+    minimax(A, N, pWW, pWB, pWinner, i, j, 3, -1000000, 1000000, 1, possiblemoves, &move, history, hSize);
 
     // Interpret move and call the proper function
-    execute(A, N, move, i, j, pWW, pWB, p, pWinner, history, hSize); // Function exists in utilities.c
+    execute(A, N, move, i, j, pWW, pWB, p, pWinner, history, hSize, 1); // Function exists in utilities.c
     return;
 }
 

@@ -137,8 +137,9 @@ int min(int a, int b){
         return b;
 }
 
-/* Interpret's and executes move based by calling the proper function */
-int execute(element **A, int N, int move, int i, int j, int *pWW, int *pWB, char p, char *pWinner, char ***history, int *hSize){
+/* Interpret's and executes move based by calling the proper function 
+   The genmove variable exists to inform the function that it was called by genmove */
+int execute(element **A, int N, int move, int i, int j, int *pWW, int *pWB, char p, char *pWinner, char ***history, int *hSize, int gemomve){
     int dr[4] = {-1, +1, 0, 0}; // Direction vectors for rows
     int dc[4] = {0, 0, +1, -1}; // Direction vectors for collumns
     printf("%d\n",move);
@@ -150,7 +151,7 @@ int execute(element **A, int N, int move, int i, int j, int *pWW, int *pWB, char
         toVertex(N, &v, i, j);
         char *pos;
         sprintf(pos,"%c%d", v.x, v.y);
-        printf("= %C%d\n\n", v.x, v.y);
+        if(genmove) printf("= %C%d\n\n", v.x, v.y);
         playmove(A, N, &p, pos, pWinner, history, hSize);
         return 0;
     }
@@ -171,7 +172,7 @@ int execute(element **A, int N, int move, int i, int j, int *pWW, int *pWB, char
         toVertex(N, &v, r, c);
         char *pos;
         sprintf(pos,"%c%d", v.x, v.y);
-        printf("= %C%d %c\n\n", v.x, v.y, o);
+        if(genmove) printf("= %C%d %c\n\n", v.x, v.y, o);
         playwall(A, N, *pWW, *pWB, &p, pos, &o, history, hSize);
         return 0;
     }
