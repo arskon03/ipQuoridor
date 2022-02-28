@@ -155,8 +155,7 @@ int execute(element **A, int N, int move, int i, int j, int *pWW, int *pWB, char
         return 0;
     }
 
-    /* All other cases are wall placements so they are mixed together in one case
-        because their count is variable (depending on N) and not constant          */
+    /* All other cases are wall placements */
     else{
         // Find position of the wall based on the number of the move 
         int r,c;

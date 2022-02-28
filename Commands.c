@@ -125,7 +125,7 @@ void clearboard(element **A, int N, node **history, int *hSize){
     *hSize = 0;
 }
 
-/*Places wall on the right position with the right orientation*/
+/* Places wall on the right position with the right orientation */
 int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, char *orientation, node **history, int* hSize){
     // Make sure wall position is valid
     /*if (strlen(pos) > 3)
@@ -256,7 +256,7 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
 /* Undoes last move a given number of times */
 int undo(int times, element **A, int N, int *pWW, int *pWB, char *pWinner, node **history, int *hSize){
     
-    for (int i = 0; i < *hSize; i++)
+    for (int i = 0; i < *hSize; i++)      // < hSIze?????? (<= times)
     {
         printf("move: %s|\n", (*history)->move);
         char type = (*history)->move[0];
@@ -291,7 +291,7 @@ int undo(int times, element **A, int N, int *pWW, int *pWB, char *pWinner, node 
             A[si][sj].P = player;
             printf("yay1\n");
         }
-        else
+        else  // type == 'W'
         {
             char tLet, player, orient;
             int tNum;
@@ -314,7 +314,7 @@ int undo(int times, element **A, int N, int *pWW, int *pWB, char *pWinner, node 
             A[ti][tj].w_or = ' ';
             if(player == 'W')
                 (*pWW)++;
-            else
+            else // player == 'B'
                 *(pWB)++;
 
             printf("yay4\n");
