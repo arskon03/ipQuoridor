@@ -24,6 +24,7 @@ int insert_at_start(node **start, char *string)
 void remove_at_start(node** start)
 {
     node *next = (*start)->nextNode;
+    free((*start)->move);
     free(*start);
     *start = next;
 }
@@ -239,7 +240,7 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
     printf("= \n\n");
 
     // Adding action to game history
-    char action[8]; // This string will hold the description of the action performed
+    char *action = malloc(sizeof(char) * 8); // This string will hold the description of the action performed
     sprintf(action, "W%c%02d%c%c",A[i][j].V.x,A[i][j].V.y,o, p);
 
     int check = insert_at_start(history, action);
@@ -256,7 +257,7 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
 /* Undoes last move a given number of times */
 int undo(int times, element **A, int N, int *pWW, int *pWB, char *pWinner, node **history, int *hSize){
     
-    for (int i = 0; i < *hSize; i++)      // < hSIze?????? (<= times)
+    for (int i = 0; i < times; i++)      // < hSIze?????? (<= times) yeah sry
     {
         printf("move: %s|\n", (*history)->move);
         char type = (*history)->move[0];
@@ -315,7 +316,7 @@ int undo(int times, element **A, int N, int *pWW, int *pWB, char *pWinner, node 
             if(player == 'W')
                 (*pWW)++;
             else // player == 'B'
-                *(pWB)++;
+                (*pWB)++;
 
             printf("yay4\n");
         }
@@ -340,7 +341,7 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** 
         return 0;
     }
     */
-    char move[10];
+    char *move = malloc(sizeof(char) * 10);
 
     // Store the type of move
     char type = 'M';
