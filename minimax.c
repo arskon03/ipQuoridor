@@ -50,7 +50,7 @@ int minimax(element **A, int N, int *pWW, int *pWB, char *pWinner,int depth, int
 
     // Process for minimizing player
     else{
-        int min_eval = 1000000;
+        int min_eval = __INT_MAX__;
         for(i = 1; i <= possiblemoves;i++){
             // Find minimizing player's position
             find(A, N, 'B', &r, &c); //Black is the minimizing player
