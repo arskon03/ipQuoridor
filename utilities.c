@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 #include "Commands.h"
 #include "utilities.h"
+#include "pathfinder.h"
 
 // Convert a string to all lowercase
 char* toLow(char* string)
@@ -176,4 +178,79 @@ int execute(element **A, int N, int move, int i, int j, int *pWW, int *pWB, char
         playwall(A, N, pWW, pWB, &p, pos, &o, history, hSize);
         return 0;
     }
+}
+
+int legal_move(element **A, int N, int *pWW, int *pWB, char player, char type, int *iptr, int *jptr, char orient)
+{
+    char opponent;
+    int i = *iptr, j = *jptr;
+    if (player == 'W') opponent = 'B';
+    if (player == 'B') opponent = 'W';
+
+    if (type == 'M')
+    {
+        if (i < 0 || i > N - 1 || j < 0 || j > N - 1)
+            return 0;
+
+        int pi, pj;
+        find(A, N, player, &pi, &pj);
+
+        if (!connected(A, pi, pj, i, j)) 
+            return 0;
+        
+        if (A[i][j].P == opponent)
+        {
+            int bi = 2 * i - pi, bj = 2* j - pj, check = 0;
+
+            if (bi < 0 || bi > N - 1 || bj < 0 || bj > N - 1)
+                check = 1;
+
+            if (!check && !connected(A, i, j ,bi, bj))
+                check = 1;
+
+            if (check)
+            {
+                int axis = 0, coords[2] = {i, j};
+                if (i == pi)
+                    axis = 0;
+                else if (j == pj)
+                    axis = 1;
+
+                int vector[2] = {1, -1};
+                int score = INT_MIN, index = 0, found = 0;
+
+                for (int ind = 0; ind < 2; ind++)
+                {
+                    int temp = coords[axis];
+                    coords[axis] += vector[ind];
+
+                    if (coords[axis] >= 0 && coords[axis] <= N-1)
+                    {
+                        int newscore;
+                        if (connected(A, i, j, coords[0], coords[1]) && ((newscore = pathfinder(A, N, player, coords[0], coords[1])) > score))
+                        {
+                            found = 1;
+                            index = ind;
+                            score = newscore;
+                        }
+                    }
+                        
+                    coords[axis] = temp;
+                }
+
+                if (!found)
+                    return 0;
+
+                coords[axis] += vector[index];
+                *iptr = coords[0];
+                *jptr = coords[1];
+            }
+            else
+            {
+                *iptr = bi;
+                *jptr = bj;
+            }
+        }
+    }
+    return 1;
 }

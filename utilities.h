@@ -8,3 +8,4 @@ int find(element **A, int N, char P, int *r, int *c);
 int max(int a, int b);
 int min(int a, int b);
 int execute(element **A, int N, int move, int i, int j, int *pWW, int *pWB, char p, char *pWinner, node **history, int *hSize, int genmove);
+int legal_move(element **A, int N, int *pWW, int *pWB, char player, char type, int *iptr, int *jptr, char orient);
