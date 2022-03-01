@@ -241,7 +241,9 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
 
     // Adding action to game history
     char *action = malloc(sizeof(char) * 8); // This string will hold the description of the action performed
-    sprintf(action, "W%c%02d%c%c",A[i][j].V.x,A[i][j].V.y,o, p);
+    vertex V;
+    toVertex(N, &V, i, j);
+    sprintf(action, "W%c%02d%c%c",V.x,V.y,o, p);
 
     int check = insert_at_start(history, action);
     if (check == 0){

@@ -142,6 +142,8 @@ int execute(element **A, int N, int move, int i, int j, int *pWW, int *pWB, char
     int dr[4] = {-1, +1, 0, 0}; // Direction vectors for rows
     int dc[4] = {0, 0, +1, -1}; // Direction vectors for collumns
     printf("%d\n",move);
+
+    /* First four avtions are move to one direction based on the vectors */
     if(move <= 4){
         i += dr[move - 1];
         j += dc[move - 1];
