@@ -70,7 +70,7 @@ int pathfinder(element **A, int N, char P, int sr, int sc){
             next_layer = 0;
             moves++;
         }
-        printf("%d\n",moves);
+        //printf("%d\n",moves);
     }
     // Process ended so we free allocated memory and return
     for(i = 0;i < N;i++) free(visited[i]);

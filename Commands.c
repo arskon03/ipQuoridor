@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 #include "Commands.h"
 #include "utilities.h"
 #include "pathfinder.h"
+#include "minimax.h"
 
 int insert_at_start(node **start, char *string)
 {
@@ -238,6 +240,7 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
     else if(p == 'W' && *pWW > 0)
         (*pWW)--; 
     printf("= \n\n");
+    fflush(stdout);
 
     // Adding action to game history
     char *action = malloc(sizeof(char) * 8); // This string will hold the description of the action performed
@@ -251,7 +254,7 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
         return 1;
     }
     ++*hSize;
-    printf("%s\nsize: %d\n", (*history)->move, *hSize);
+    //printf("%s\nsize: %d\n", (*history)->move, *hSize);
 
     return 0;
 }
@@ -261,9 +264,9 @@ int undo(int times, element **A, int N, int *pWW, int *pWB, char *pWinner, node 
     
     for (int i = 0; i < times; i++)      // < hSIze?????? (<= times) yeah sry
     {
-        printf("move: %s|\n", (*history)->move);
+        //printf("move: %s|\n", (*history)->move);
         char type = (*history)->move[0];
-        printf("type: %c|\n", type);
+        //printf("type: %c|\n", type);
 
         // Decodes the move and undoes its action one at a time
         if (type == 'M')
@@ -272,7 +275,7 @@ int undo(int times, element **A, int N, int *pWW, int *pWB, char *pWinner, node 
             int sNum, tNum;
 
             sscanf((*history)->move, "%c%c%d>%c%d%c", &type, &sLet, &sNum, &tLet, &tNum, &player);
-            printf("yay3\n");
+            //printf("yay3\n");
 
             vertex start, target;
             start.x = sLet;
@@ -292,14 +295,17 @@ int undo(int times, element **A, int N, int *pWW, int *pWB, char *pWinner, node 
 
             A[ti][tj].P = ' ';
             A[si][sj].P = player;
-            printf("yay1\n");
+            if((player == 'W' && ti == 0) || (player == 'B' && ti == N - 1))
+                *pWinner = '\0';
+
+            //printf("yay1\n");
         }
         else  // type == 'W'
         {
             char tLet, player, orient;
             int tNum;
             sscanf((*history)->move, "%c%c%d%c%c", &type, &tLet, &tNum, &orient, &player);
-            printf("yay5\n");
+            //printf("yay5\n");
 
             vertex target;
             target.x = tLet;
@@ -320,10 +326,12 @@ int undo(int times, element **A, int N, int *pWW, int *pWB, char *pWinner, node 
             else // player == 'B'
                 (*pWB)++;
 
-            printf("yay4\n");
+            //printf("yay4\n");
         }
 
         // At the end of the loop remove the move that just got undone
+        printf("undid: %s \n", (*history)->move);
+        fflush(stdout);
         remove_at_start(history);
     }
     // Decrease the size of the history by times
@@ -403,20 +411,20 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** 
     // If outside range then it is an illegal move
     if(v.y <= 0 || v.y > N)
     {
-        printf("? illegal move1\n\n");
+        printf("? illegal move\n\n");
         return 0;
     }
     toArray(N, &v, &i, &j);
     if( j < 0 || j >= N )
     {
-        printf("? illegal move2\n\n");
+        printf("? illegal move\n\n");
         return 0;
     }
 
     // If vertex is not empty then is is an illegal move
     if(A[i][j].P != ' ')
     {
-        printf("? illegal move3\n\n");
+        printf("? illegal move\n\n");
         return 0;
     }
 
@@ -434,7 +442,7 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** 
     {
         int tempI = (ind < 3) ? ( (i > 0 && ind == 1) ? vi - 1 : ( (i < N - 1) ? vi + 1 : vi) ) : vi;
         int tempJ = (ind > 2) ? ( (j > 0 && ind == 3) ? vj - 1 : ( (j < N - 1) ? vj + 1 : vj) ) : vj;
-         printf("vi: %d, vj: %d, tempI: %d, tempJ: %d\n", vi, vj, tempI, tempJ);
+        //printf("vi: %d, vj: %d, tempI: %d, tempJ: %d\n", vi, vj, tempI, tempJ);
 
         if ( tempI == -1 || tempJ == -1 ) 
             return 1;     //1 = panic = crash
@@ -469,12 +477,12 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** 
     if (found == -1)
     {
         //printf("123\n"); //problem is here
-        printf("? illegal move4\n\n");
+        printf("? illegal move\n\n");
         return 0;
     }
     if (!connected(A, prevI, prevJ, i, j))
     {
-        printf("? illegal move5\n\n");
+        printf("? illegal move\n\n");
         return 0;
     }
     //printf("prevI: %d, prevJ: %d\n", prevI, prevJ);
@@ -505,13 +513,13 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** 
 
         if (!found)
         {
-            printf("? illegal move6\n\n");
+            printf("? illegal move\n\n");
             return 0;
         }
 
         if (!connected(A, pI, pJ, prevI, prevJ))
         {
-            printf("? illegal move7\n\n");
+            printf("? illegal move\n\n");
             return 0;
         }
 
@@ -540,7 +548,7 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** 
 
             if (!bCheck)
             {
-                printf("? illegal move8\n\n");
+                printf("? illegal move\n\n");
                 return 0;
             }
 
@@ -568,7 +576,7 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** 
             return 1;
         }
         ++*hSize;
-        printf("%s\nsize: %d\n", (*history)->move, *hSize);
+        //printf("%s\nsize: %d\n", (*history)->move, *hSize);
     }
 
     // If player is white and is at the end of the board or is black and its at the start, then we have a winner
@@ -576,7 +584,8 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** 
         *pWinner = p;
 
     printf("=\n\n");
-
+    fflush(stdout);
+    
     return 0;
 }
 
@@ -609,11 +618,15 @@ int genmove(element **A, int N, char *player, int *pWW, int *pWB, char *pWinner,
     // Possible moves = 4(max 4 directions to move) + every possible wall placement
     int possiblemoves = 4 + (N-1)*(N-1)*2;
     int i,j;
-    int move; // This variable will represent the move chosen by minimax
+    int move = 1; // This variable will represent the move chosen by minimax
+
+    //printf("Before minimax\n");
 
     // Call minimax to find the best move (White = maximizing player, Black = minimizing player)
     // We call the function starting with 1 or 0 for the maximizing player depending on p
-    minimax(A, N, pWW, pWB, pWinner, 3, -1000000, 1000000, (p == 'W') ? 1 : 0, possiblemoves, &move, history, hSize);
+    int check = minimax(A, N, pWW, pWB, pWinner, 3, INT_MIN, INT_MAX, (p == 'W') ? 1 : 0, possiblemoves, &move, history, hSize);
+
+    if(check == INT_MIN + 1) return 0;
 
     // Interpret move and call the proper function
     return execute(A, N, move, i, j, pWW, pWB, p, pWinner, history, hSize, 1); // Function exists in utilities.c

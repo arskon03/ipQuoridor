@@ -140,23 +140,46 @@ int min(int a, int b){
 
 /* Interpret's and executes move based by calling the proper function 
    The genmove variable exists to inform the function that it was called by genmove */
-int execute(element **A, int N, int move, int i, int j, int *pWW, int *pWB, char p, char *pWinner, node **history, int *hSize, int gemomve){
+int execute(element **A, int N, int move, int i, int j, int *pWW, int *pWB, char p, char *pWinner, node **history, int *hSize, int genmove){
     int dr[4] = {-1, +1, 0, 0}; // Direction vectors for rows
     int dc[4] = {0, 0, +1, -1}; // Direction vectors for collumns
-    printf("%d\n",move);
+    printf("move: %d\n",move);
+    fflush(stdout);
 
+    int isLegal = 0;
     /* First four avtions are move to one direction based on the vectors */
     if(move <= 4){
         i += dr[move - 1];
         j += dc[move - 1];
-        // Make coordinates into a vertex and then into a string to pass on to playmove
+
+        // If move is not legal return 0
+        isLegal = legal_move(A, N, pWW, pWB, p, 'M', &i, &j, '\0');
+        if (!isLegal)
+            return 0;
+        // If legal_move paniced, panic
+        else if (isLegal == -2)
+            return -1;
+        
+        //printf("After legal_move\n");
+        // Create proper parameters for playmove (strings)
         vertex v;
         toVertex(N, &v, i, j);
-        char *pos;
+
+        char *pos = malloc(sizeof(char)*4);
         sprintf(pos,"%c%d", v.x, v.y);
+        printf("pos: %s\n", pos);
+        fflush(stdout);
+
+        char *player = malloc(sizeof(char)*2);
+        sprintf(player,"%c", p);
+        printf("player: %s\n", player);
+        fflush(stdout);
+
         if(genmove) printf("= %C%d\n\n", v.x, v.y);
-        playmove(A, N, &p, pos, pWinner, history, hSize);
-        return 0;
+        playmove(A, N, player, pos, pWinner, history, hSize);
+        free(pos);
+        free(player);
+        return 1;
     }
 
     /* All other cases are wall placements */
@@ -167,16 +190,43 @@ int execute(element **A, int N, int move, int i, int j, int *pWW, int *pWB, char
         c = ((move - 4)/2)%(N-1);
 
         // Find orientation based on the number of the move
-        char o = (move%2) ? 'h' : 'v'; // Odd numbers for horizontal placement and even for vertical
+        char o = (move%2) ? 'H' : 'V'; // Odd numbers for horizontal placement and even for vertical
 
-        // Make coordinates into a vertex and then into a string to pass on to playwall
+        // If move is not legal return 0
+        fflush(stdout);
+        isLegal = legal_move(A, N, pWW, pWB, p, 'W', &r, &c, o);
+        printf("A\n");
+        if (!isLegal)
+            return 0;
+        // If legal_move paniced, panic
+        else if (isLegal == -2)
+            return -1;
+        
+        // Create proper parameters for playwall (strings)
         vertex v;
         toVertex(N, &v, r, c);
-        char *pos;
+
+        char *pos = malloc(sizeof(char)*4);
         sprintf(pos,"%c%d", v.x, v.y);
+        printf("pos: %s\n", pos);
+        fflush(stdout);
+
+        char *player = malloc(sizeof(char)*2);
+        sprintf(player,"%c", p);
+        printf("player: %s\n", player);
+        fflush(stdout);
+
+        char *orient = malloc(sizeof(char)*2);
+        sprintf(orient,"%c", o);
+        printf("orientation: %s\n", orient);
+        fflush(stdout);
+
         if(genmove) printf("= %C%d %c\n\n", v.x, v.y, o);
-        playwall(A, N, pWW, pWB, &p, pos, &o, history, hSize);
-        return 0;
+        playwall(A, N, pWW, pWB, player, pos, orient, history, hSize);
+        free(pos);
+        free(player);
+        free(orient);
+        return 1;
     }
 }
 
@@ -187,6 +237,7 @@ int legal_move(element **A, int N, int *pWW, int *pWB, char player, char type, i
     if (player == 'W') opponent = 'B';
     if (player == 'B') opponent = 'W';
 
+    // If the type is a move
     if (type == 'M')
     {
         // Make sure move is on the board
@@ -253,6 +304,7 @@ int legal_move(element **A, int N, int *pWW, int *pWB, char player, char type, i
                 *iptr = coords[0];
                 *jptr = coords[1];
             }
+            // If there vertex behind the enemy player is free to go ther, then return that move
             else
             {
                 *iptr = bi;
@@ -260,14 +312,24 @@ int legal_move(element **A, int N, int *pWW, int *pWB, char player, char type, i
             }
         }
     }
+    // If the type is a wall
     else if (type == 'W')
     {
+        // Make sure wall is not in last row/column or higher than that
         if(i < 0 || i >= N-1 || j < 0 || j >= N-1)
             return 0;
         
+        // Make sure it is not on the position of another wall
         if(A[i][j].w_or != ' ')
             return 0;
 
+        // Make sure the player has walls to place
+        if ((player == 'W' && *pWW < 1) || (player == 'B' && *pWB < 1))
+            return 0;
+
+        // Make sure there isn't a wall in a closeby vertex that would block placement
+        printf("i: %d, j: %d\n", i, j);
+        fflush(stdout);
         char o = ' ';
         if (orient == 'H')
         {
@@ -291,7 +353,30 @@ int legal_move(element **A, int N, int *pWW, int *pWB, char player, char type, i
         if (o == ' ')
             return 0;
 
-        
+        // Temporarily place wall
+        A[i][j].w_or = o;
+        int check = 0;
+        // Check if wall is blocking the path of either player
+        for (int ind = 0; ind < 2; ind++)
+        {
+            char p = (!ind) ? 'W' : 'B';
+            int Path = pathfinder(A, N, p, -1, -1);
+            if(Path == -100) 
+                return -2; // Malloc/find failed (PANIC)
+
+            // If path is blocked remove the wall and the move is illegal
+            else if(Path == -1)
+                check = 1;
+            
+            //return 0;
+        }
+        A[i][j].w_or = ' ';
+
+        if(check)
+            return 0;
     }
+    else
+        return -1;
+
     return 1;
 }

@@ -237,9 +237,9 @@ int Command(char *input,element ***A,int *pN,int *pWW,int *pWB,char *pWinner,nod
         if(arg1 == NULL) //might need correction
             printf("? invalid syntax\n\n");
         else{
-            printf("= \ngenmove\n\n");
+            printf("= \n\n");
             // Generate best action(move or wall placement)                                     
-            genmove(*A, *pN, arg1, pWW, pWB, pWinner, history, hSize);
+            if(!genmove(*A, *pN, arg1, pWW, pWB, pWinner, history, hSize)) return 1;
         }
     }
 
