@@ -189,27 +189,33 @@ int legal_move(element **A, int N, int *pWW, int *pWB, char player, char type, i
 
     if (type == 'M')
     {
+        // Make sure move is on the board
         if (i < 0 || i > N - 1 || j < 0 || j > N - 1)
             return 0;
 
         int pi, pj;
         find(A, N, player, &pi, &pj);
 
+        // Check if player is connected with the move
         if (!connected(A, pi, pj, i, j)) 
             return 0;
         
+        // if there is the opponent on the square to move at
         if (A[i][j].P == opponent)
         {
             int bi = 2 * i - pi, bj = 2* j - pj, check = 0;
-
+            
+            // Check wether behind of the opponent is either a wall or the end of the board
             if (bi < 0 || bi > N - 1 || bj < 0 || bj > N - 1)
                 check = 1;
 
             if (!check && !connected(A, i, j ,bi, bj))
                 check = 1;
 
+            // if it is
             if (check)
             {
+                // We check the two spaces to next to the opponent according to which coordinate didn't change
                 int axis = 0, coords[2] = {i, j};
                 if (i == pi)
                     axis = 0;
@@ -219,6 +225,7 @@ int legal_move(element **A, int N, int *pWW, int *pWB, char player, char type, i
                 int vector[2] = {1, -1};
                 int score = INT_MIN, index = 0, found = 0;
 
+                // And we keep the space that is closest to the finish
                 for (int ind = 0; ind < 2; ind++)
                 {
                     int temp = coords[axis];
@@ -238,6 +245,7 @@ int legal_move(element **A, int N, int *pWW, int *pWB, char player, char type, i
                     coords[axis] = temp;
                 }
 
+                // If there wasn't an availiable space to go to it is an illegal move
                 if (!found)
                     return 0;
 
@@ -251,6 +259,39 @@ int legal_move(element **A, int N, int *pWW, int *pWB, char player, char type, i
                 *jptr = bj;
             }
         }
+    }
+    else if (type == 'W')
+    {
+        if(i < 0 || i >= N-1 || j < 0 || j >= N-1)
+            return 0;
+        
+        if(A[i][j].w_or != ' ')
+            return 0;
+
+        char o = ' ';
+        if (orient == 'H')
+        {
+            // Checking if wall can be placed there
+            if (j == 0 && A[i][j+1].w_or != 'H') // First collumn can't have a horizontal wall at the left it
+                o = 'H';
+            else if(A[i][j-1].w_or != 'H' && A[i][j+1].w_or != 'H')
+                o = 'H';
+        }
+        else if (orient == 'V')
+        {
+            // Checking if wall can be placed there
+            if(i == 0 && A[i+1][j].w_or != 'V') // First row can't have a vertical wall above it
+                o = 'V';
+            else if(A[i-1][j].w_or != 'V' && A[i+1][j].w_or != 'V')
+                o = 'V';
+        }
+        else
+            return -1; 
+
+        if (o == ' ')
+            return 0;
+
+        
     }
     return 1;
 }
