@@ -334,7 +334,7 @@ int legal_move(element **A, int N, int *pWW, int *pWB, char player, char type, i
         if (orient == 'H')
         {
             // Checking if wall can be placed there
-            if (j == 0 && A[i][j+1].w_or != 'H') // First collumn can't have a horizontal wall at the left it
+            if (j == 0 && A[i][j+1].w_or != 'H') /*IF J == 0 AND THERE IS WALL IN J+1 POS THEN SEGMENTATION*/  // First collumn can't have a horizontal wall at the left it
                 o = 'H';
             else if(A[i][j-1].w_or != 'H' && A[i][j+1].w_or != 'H')
                 o = 'H';
@@ -342,7 +342,7 @@ int legal_move(element **A, int N, int *pWW, int *pWB, char player, char type, i
         else if (orient == 'V')
         {
             // Checking if wall can be placed there
-            if(i == 0 && A[i+1][j].w_or != 'V') // First row can't have a vertical wall above it
+            if(i == 0 && A[i+1][j].w_or != 'V') /*IF I == 0 AND THERE IS WALL IN I+1 POS THEN SEGMENTATION*/ // First row can't have a vertical wall above it
                 o = 'V';
             else if(A[i-1][j].w_or != 'V' && A[i+1][j].w_or != 'V')
                 o = 'V';
