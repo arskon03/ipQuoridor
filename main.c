@@ -99,6 +99,7 @@ int main(void){
         Panic = Command(temp,&A,&N,&WW,&WB,&Winner,&history,&hSize);  // Interprets command based on the given string 
         //if (Panic == 1 || Panic == -1) break;
     }
+    //
     if (Panic == 1) return 1;
     if (Panic == -1) return 0;  // User gave quit command
     for(i = 0;i < N;i++)
@@ -213,7 +214,7 @@ int Command(char *input,element ***A,int *pN,int *pWW,int *pWB,char *pWinner,nod
             printf("? invalid syntax\n");
         else{
             //printf("=\nplaymove\n");
-            int P = playmove(*A,*pN,arg1,arg2,pWinner,history,hSize);
+            int P = playmove(*A,*pN,arg1,arg2,pWinner,history,hSize, 1);
             if(P == 1) return 1;     //malloc failed (PANIC)
         }
     }
@@ -226,7 +227,7 @@ int Command(char *input,element ***A,int *pN,int *pWW,int *pWB,char *pWinner,nod
         if(arg1 == NULL || arg2 == NULL || arg3 == NULL)   // Player,position,and wall direction are neeeded to execute the move
             printf("? invalid syntax\n\n");
         else{
-            int P = playwall(*A,*pN,pWW,pWB,arg1,arg2,arg3,history,hSize);
+            int P = playwall(*A,*pN,pWW,pWB,arg1,arg2,arg3,history,hSize, 1);
             if(P == 1) return 1;     // Malloc failed (PANIC)
         }
     }
@@ -239,7 +240,11 @@ int Command(char *input,element ***A,int *pN,int *pWW,int *pWB,char *pWinner,nod
         else{
             printf("= \n\n");
             // Generate best action(move or wall placement)                                     
-            if(!genmove(*A, *pN, arg1, pWW, pWB, pWinner, history, hSize)) return 1;
+            if(!genmove(*A, *pN, arg1, pWW, pWB, pWinner, history, hSize))
+            {
+                printf("? genmove panicked\n\n");
+                return 1;
+            }  
         }
     }
 

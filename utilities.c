@@ -143,8 +143,8 @@ int min(int a, int b){
 int execute(element **A, int N, int move, int i, int j, int *pWW, int *pWB, char p, char *pWinner, node **history, int *hSize, int genmove){
     int dr[4] = {-1, +1, 0, 0}; // Direction vectors for rows
     int dc[4] = {0, 0, +1, -1}; // Direction vectors for collumns
-    printf("move: %d\n",move);
-    fflush(stdout);
+    //printf("move: %d\n",move);
+    //fflush(stdout);
 
     int isLegal = 0;
     /* First four avtions are move to one direction based on the vectors */
@@ -167,16 +167,16 @@ int execute(element **A, int N, int move, int i, int j, int *pWW, int *pWB, char
 
         char *pos = malloc(sizeof(char)*4);
         sprintf(pos,"%c%d", v.x, v.y);
-        printf("pos: %s\n", pos);
-        fflush(stdout);
+        //printf("pos: %s\n", pos);
+        //fflush(stdout);
 
         char *player = malloc(sizeof(char)*2);
         sprintf(player,"%c", p);
-        printf("player: %s\n", player);
-        fflush(stdout);
+        //printf("player: %s\n", player);
+        //fflush(stdout);
 
         if(genmove) printf("= %C%d\n\n", v.x, v.y);
-        playmove(A, N, player, pos, pWinner, history, hSize);
+        playmove(A, N, player, pos, pWinner, history, hSize, 0);
         free(pos);
         free(player);
         return 1;
@@ -193,9 +193,8 @@ int execute(element **A, int N, int move, int i, int j, int *pWW, int *pWB, char
         char o = (move%2) ? 'H' : 'V'; // Odd numbers for horizontal placement and even for vertical
 
         // If move is not legal return 0
-        fflush(stdout);
         isLegal = legal_move(A, N, pWW, pWB, p, 'W', &r, &c, o);
-        printf("A\n");
+
         if (!isLegal)
             return 0;
         // If legal_move paniced, panic
@@ -208,21 +207,21 @@ int execute(element **A, int N, int move, int i, int j, int *pWW, int *pWB, char
 
         char *pos = malloc(sizeof(char)*4);
         sprintf(pos,"%c%d", v.x, v.y);
-        printf("pos: %s\n", pos);
-        fflush(stdout);
+        //printf("pos: %s\n", pos);
+        //fflush(stdout);
 
         char *player = malloc(sizeof(char)*2);
         sprintf(player,"%c", p);
-        printf("player: %s\n", player);
-        fflush(stdout);
+        //printf("player: %s\n", player);
+        //fflush(stdout);
 
         char *orient = malloc(sizeof(char)*2);
         sprintf(orient,"%c", o);
-        printf("orientation: %s\n", orient);
-        fflush(stdout);
+        //printf("orientation: %s\n", orient);
+        //fflush(stdout);
 
         if(genmove) printf("= %C%d %c\n\n", v.x, v.y, o);
-        playwall(A, N, pWW, pWB, player, pos, orient, history, hSize);
+        playwall(A, N, pWW, pWB, player, pos, orient, history, hSize, 0);
         free(pos);
         free(player);
         free(orient);
@@ -328,22 +327,26 @@ int legal_move(element **A, int N, int *pWW, int *pWB, char player, char type, i
             return 0;
 
         // Make sure there isn't a wall in a closeby vertex that would block placement
-        printf("i: %d, j: %d\n", i, j);
-        fflush(stdout);
+        //printf("i: %d, j: %d\n", i, j);
+        //fflush(stdout);
         char o = ' ';
         if (orient == 'H')
         {
             // Checking if wall can be placed there
-            if (j == 0 && A[i][j+1].w_or != 'H') /*IF J == 0 AND THERE IS WALL IN J+1 POS THEN SEGMENTATION*/  // First collumn can't have a horizontal wall at the left it
-                o = 'H';
+            if (j == 0){ // First collumn can't have a horizontal wall at the left it
+                if(A[i][j+1].w_or != 'H')
+                    o = 'H';
+            }
             else if(A[i][j-1].w_or != 'H' && A[i][j+1].w_or != 'H')
                 o = 'H';
         }
         else if (orient == 'V')
         {
             // Checking if wall can be placed there
-            if(i == 0 && A[i+1][j].w_or != 'V') /*IF I == 0 AND THERE IS WALL IN I+1 POS THEN SEGMENTATION*/ // First row can't have a vertical wall above it
-                o = 'V';
+            if(i == 0){ // First row can't have a vertical wall above it
+                if(A[i+1][j].w_or != 'V')
+                    o = 'V';
+            }
             else if(A[i-1][j].w_or != 'V' && A[i+1][j].w_or != 'V')
                 o = 'V';
         }

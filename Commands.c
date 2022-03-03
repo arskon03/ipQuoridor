@@ -129,7 +129,7 @@ void clearboard(element **A, int N, node **history, int *hSize){
 }
 
 /* Places wall on the right position with the right orientation */
-int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, char *orientation, node **history, int* hSize){
+int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, char *orientation, node **history, int* hSize, int print){
     // Make sure wall position is valid
     /*if (strlen(pos) > 3)
     {
@@ -191,8 +191,10 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
     char o = 'E';
     if(strcmp(orientBuff,"horizontal") == 0 || strcmp(orientBuff,"h") == 0)
         // Checking if wall can be placed there
-        if (j == 0 && A[i][j+1].w_or != 'H') // First collumn can't have a horizontal wall at the left it
-            o = 'H';
+        if (j == 0){ // First collumn can't have a horizontal wall at the left it
+            if(A[i][j+1].w_or != 'H')
+                o = 'H';
+        }
         else if(A[i][j-1].w_or != 'H' && A[i][j+1].w_or != 'H')
             o = 'H';
         else{
@@ -201,8 +203,10 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
         }
     else if (strcmp(orientBuff,"vertical") == 0 || strcmp(orientBuff,"v") == 0)
         // Checking if wall can be placed there
-        if(i == 0 && A[i+1][j].w_or != 'V') // First row can't have a vertical wall above it
-            o = 'V';
+        if(i == 0){ // First row can't have a vertical wall above it
+            if(A[i+1][j].w_or != 'V')
+                o = 'V';
+        }
         else if(A[i-1][j].w_or != 'V' && A[i+1][j].w_or != 'V')
             o = 'V';
         else{
@@ -239,7 +243,7 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
         (*pWB)--;
     else if(p == 'W' && *pWW > 0)
         (*pWW)--; 
-    printf("= \n\n");
+    if(print) printf("= \n\n");
     fflush(stdout);
 
     // Adding action to game history
@@ -330,8 +334,8 @@ int undo(int times, element **A, int N, int *pWW, int *pWB, char *pWinner, node 
         }
 
         // At the end of the loop remove the move that just got undone
-        printf("undid: %s \n", (*history)->move);
-        fflush(stdout);
+        //printf("undid: %s \n", (*history)->move);
+        //fflush(stdout);
         remove_at_start(history);
     }
     // Decrease the size of the history by times
@@ -341,7 +345,7 @@ int undo(int times, element **A, int N, int *pWW, int *pWB, char *pWinner, node 
 }
 
 /* Executes the given move if its legal */
-int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** history, int* hSize)
+int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** history, int* hSize, int print)
 {
     // Make sure the move is not random words
     /*
@@ -583,8 +587,11 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** 
     if((p == 'W' && i == 0) || (p == 'B' && i == N-1))
         *pWinner = p;
 
-    printf("=\n\n");
-    fflush(stdout);
+    if(print)
+    {
+        printf("=\n\n");
+        fflush(stdout);
+    }    
     
     return 0;
 }

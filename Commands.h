@@ -21,8 +21,8 @@ int undo(int times, element **A, int N, int *pWW, int *pWB, char *pWinner, node 
 int boardsize(element ***A, int nValue, int *pN);
 void clearboard(element **A, int N,node **history,int *hSize);
 void showboard(element **A, int N, int WW, int WB);
-int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** history, int* hSize);
-int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, char *orientation, node **history, int* hSize);
+int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** history, int* hSize, int print);
+int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, char *orientation, node **history, int* hSize, int print);
 int genmove(element **A, int N, char *player, int *pWW, int *pWB,char *pWinner, node **history, int *hSize);
 
 
