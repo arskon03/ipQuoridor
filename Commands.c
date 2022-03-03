@@ -111,7 +111,11 @@ void clearboard(element **A, int N, node **history, int *hSize){
     int i,j;
     // Board Configuration at the start of the game
     for(i = 0;i < N;i++)
-        for(j = 0;j < N;j++){
+    {
+        printf("i:%d\n", i);
+        for(j = 0;j < N;j++)
+        {
+            printf("j:%d\n", i);
             if(i == 0 && j == (int)(N/2))        // Black starting position
                 A[i][j].P = 'B';
             else if(i == N-1 && j == (int)(N/2)) // White starting position
@@ -124,6 +128,8 @@ void clearboard(element **A, int N, node **history, int *hSize){
             /*A[i][j].V.x = 'A' + j;
             A[i][j].V.y = N - i;*/
         }
+    }
+        
     // Game history = empty
     for(i = 0; i < *hSize; i++)
     {
