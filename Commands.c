@@ -30,6 +30,7 @@ void remove_at_start(node** start)
         node *next = (*start)->nextNode;
         free((*start)->move);
         free(*start);
+        //printf("dick\n");
         *start = next;
     }
 }

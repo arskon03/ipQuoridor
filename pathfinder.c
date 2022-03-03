@@ -15,7 +15,7 @@ int pathfinder(element **A, int N, char P, int sr, int sc){
     int i, r, c, rr, cc;
     int dr[4] = {-1, +1, 0, 0}; // Direction vectors for rows
     int dc[4] = {0, 0, +1, -1}; // Direction vectors for collumns
-    int moves = 0; // Number of steps 
+    int moves = 0; // Number of steps
     int d = (P == 'W') ? 0 : N-1; // = Destination (assuming the function is called with the right parameters)
 
     int next_layer = 0; // Equal to the nodes added to the queue in this layer.Used to keep track of the moves
@@ -75,6 +75,7 @@ int pathfinder(element **A, int N, char P, int sr, int sc){
         //printf("%d\n",moves);
     }
     // Process ended so we free allocated memory and return
+    while(q != NULL) dequeue(&q);
     for(i = 0;i < N;i++) free(visited[i]);
     free(visited);
     if(end) return moves;

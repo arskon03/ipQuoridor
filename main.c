@@ -27,7 +27,7 @@ int main(void){
     while(Panic == 0){ // Loop until Panic or quit command
         fgets(input,sizeof(input),stdin);
         if(*input == '\n') continue; // A single newline character is not considered a command
-            for(int i = 0;i < 256;i++){         
+            for(int i = 0;i < strlen(input);i++){         
                 if((input[i] >= 1 && input[i] <= 31) || input[i] == 127){
                     if(input[i] == '\t'){
                         temp[i] = ' ';
@@ -49,10 +49,15 @@ int main(void){
     }
     //
     if (Panic == 1) return 1;
-    if (Panic == -1) return 0;  // User gave quit command
     for(i = 0;i < N;i++)
         free(A[i]);
     free(A);
+
+    for(i = 0; i < hSize;i++)
+        remove_at_start(&history);
+
+    if (Panic == -1) return 0;  // User gave quit command
+    
     return 0;
 }
 

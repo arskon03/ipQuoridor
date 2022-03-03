@@ -6,7 +6,7 @@ INCLUDE = ../../include
 CC = gcc
 
 # Copiler options
-CFLAGS = -g
+CFLAGS = -g -ggdb3
 
 # Object files
 OBJS_FILES = main.o Commands.o pathfinder.o utilities.o minimax.o
