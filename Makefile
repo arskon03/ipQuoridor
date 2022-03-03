@@ -16,4 +16,6 @@ EXEC = main.exe
 
 minmax: $(OBJS_FILES)
 	$(CC) $(OBJS_FILES) -o $(EXEC)
+
+clean:
 	rm -f $(OBJS_FILES)
