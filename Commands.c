@@ -189,13 +189,13 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
     v.y = atoi(pos + 1);
     // Check if position is valid
     if(v.y <= 1 || v.y > N){         // Walls cannot be placed on the last row
-        printf("? illegal move1 v.y:%d pos:%s \n\n",v.y, pos);
+        printf("? illegal move \n\n",v.y, pos);
         fflush(stdout);
         return 0;
     }
     toArray(N, &v, &i, &j);
     if( j < 0 || j >= N-1  || A[i][j].w_or != ' '){  // Walls cannot be placed on the last collumn
-        printf("? illegal move2\n\n");                // Or on top of each other
+        printf("? illegal move \n\n");                // Or on top of each other
         fflush(stdout);
         return 0;
     }
@@ -216,7 +216,7 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
         else if(A[i][j-1].w_or != 'H' && A[i][j+1].w_or != 'H')
             o = 'H';
         else{
-            printf("? illegal move3 \n\n");
+            printf("? illegal move \n\n");
             fflush(stdout);
             return 0;
         }
@@ -229,7 +229,7 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
         else if(A[i-1][j].w_or != 'V' && A[i+1][j].w_or != 'V')
             o = 'V';
         else{
-            printf("? illegal move4 \n\n");
+            printf("? illegal move \n\n");
             fflush(stdout);
             return 0;
         }
@@ -248,7 +248,7 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
     else if(Path == -1){
         // If path is blocked remove the wall and the move is illegal
         A[i][j].w_or = ' ';
-        printf("? illegal move5 \n\n");
+        printf("? illegal move \n\n");
         fflush(stdout);
         return 0;
     }
@@ -257,7 +257,7 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
     if(Path == -100) return 1; // Malloc/find failed (PANIC)
     else if(Path == -1){
         A[i][j].w_or = ' ';
-        printf("? illegal move6 \n\n");
+        printf("? illegal move \n\n");
         fflush(stdout);
         return 0;
     }
