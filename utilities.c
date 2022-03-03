@@ -175,7 +175,11 @@ int execute(element **A, int N, int move, int i, int j, int *pWW, int *pWB, char
         //printf("player: %s\n", player);
         //fflush(stdout);
 
-        if(genmove) printf("= %C%d\n\n", v.x, v.y);
+        if(genmove)
+        {
+            printf("= %C%d\n\n", v.x, v.y);
+            fflush(stdout);
+        } 
         playmove(A, N, player, pos, pWinner, history, hSize, 0);
         free(pos);
         free(player);
