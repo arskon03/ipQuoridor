@@ -8,14 +8,14 @@
 int Command(char *input, element ***A, int *pN, int *pWW, int *pWB, char *pWinner,node **history,int *hSize);     //0 = proper execution, 1 = Panic situation
 
 int main(void){
-    int N = 0, WW, WB = 10, i, Panic = 0,hSize;
+    int N = 0, WW, WB = 10, i, Panic = 0,hSize=0;
     char Winner = '\0', input[256]; // History is NULL so clearboard can free it
     node *history = NULL;
     element **A = NULL; // A will hold player positions/Wall positions/orientation and the coordinates as vertices
     /*Initializing with default values*/
     Panic = boardsize(&A,9,&N);
     if(Panic == 1){ // Malloc failed
-        printf("? Not enough memory!\n\n");
+        printf("? Not enough memory! \n\n");
         fflush(stdout);
         return 1;
     }
@@ -65,14 +65,14 @@ int Command(char *input,element ***A,int *pN,int *pWW,int *pWB,char *pWinner,nod
     /* Only blank characters on input */
     if(com == NULL)
     {
-        printf("? unknown command\n\n");
+        printf("? unknown command \n\n");
         fflush(stdout);
     }
 
     /* Command: name */
     else if(strcmp(com,"name") == 0)
     {
-        printf("= 21-083.21-033\n\n");
+        printf("= 21-083.21-033 \n\n");
         fflush(stdout);
     }
 
@@ -80,18 +80,18 @@ int Command(char *input,element ***A,int *pN,int *pWW,int *pWB,char *pWinner,nod
     else if (strcmp(com,"known_command") == 0){
         arg1 = strtok(NULL," \n");
         if (strcmp(arg1,"name") == 0 || strcmp(arg1,"known_command") == 0)
-            printf("= true\n\n");
+            printf("= true \n\n");
         else if(strcmp(arg1,"list_commands") == 0 || strcmp(arg1,"quit") == 0)    // Trying to evade huge lines
-            printf("= true\n\n");
+            printf("= true \n\n");
         else if(strcmp(arg1,"boardsize") == 0 || strcmp(arg1,"clear_board") == 0)
-            printf("= true\n\n");
+            printf("= true \n\n");
         else if (strcmp(arg1,"walls") == 0 || strcmp(arg1,"playmove") == 0)
-            printf("= true\n\n");
+            printf("= true \n\n");
         else if(strcmp(arg1,"playwall") == 0 || strcmp(arg1,"genmove") == 0)
-            printf("= true\n\n");
+            printf("= true \n\n");
         else if(strcmp(arg1,"undo") == 0 || strcmp(arg1,"winner") == 0 || strcmp(arg1,"showboard") == 0)
-            printf("= true\n\n");
-        else printf("? false\n\n");
+            printf("= true \n\n");
+        else printf("? false \n\n");
 
         fflush(stdout);
     }
@@ -100,7 +100,7 @@ int Command(char *input,element ***A,int *pN,int *pWW,int *pWB,char *pWinner,nod
     else if(strcmp(com,"list_commands") == 0){
         printf("=\nname\nknown_command\nlist_commands\nquit\nboardsize\n");
         fflush(stdout);
-        printf("clear_board\nwalls\nplaymove\nplaywall\ngenmove\nundo\nwinner\nshowboard\n\n");
+        printf("clear_board\nwalls\nplaymove\nplaywall\ngenmove\nundo\nwinner\nshowboard \n\n");
         fflush(stdout);
     }
 
@@ -122,17 +122,17 @@ int Command(char *input,element ***A,int *pN,int *pWW,int *pWB,char *pWinner,nod
         //printf("= \nundo %d\n\n",times);  // TEST 
         if(times <= 0)
         {
-            printf("=\n\n");
+            printf("= \n\n");
             fflush(stdout);
         } 
         else if (times <= *hSize){   // hSize = moves/walls played
-            printf("=\n\n");
+            printf("= \n\n");
             fflush(stdout);
             if(undo(times,*A,*pN,pWW,pWB,pWinner,history,hSize)) return 1; // PANIC
         }
         else
         {
-            printf("? cannot undo\n\n");
+            printf("? cannot undo \n\n");
             fflush(stdout);
         } 
     }
@@ -141,7 +141,7 @@ int Command(char *input,element ***A,int *pN,int *pWW,int *pWB,char *pWinner,nod
     else if(strcmp(com,"boardsize") == 0){
         arg1 = strtok(NULL," \n");
         if(arg1 == NULL){ 
-            printf("? invalid syntax\n\n");
+            printf("? invalid syntax \n\n");
             fflush(stdout);
             return 0;
         }
@@ -154,7 +154,7 @@ int Command(char *input,element ***A,int *pN,int *pWW,int *pWB,char *pWinner,nod
         }
         else
         {
-            printf("? unacceptable size\n\n");
+            printf("? unacceptable size \n\n");
             fflush(stdout);
         } 
     }
@@ -170,7 +170,7 @@ int Command(char *input,element ***A,int *pN,int *pWW,int *pWB,char *pWinner,nod
     else if(strcmp(com,"walls") == 0){
         arg1 = strtok(NULL," \n");
         if(arg1 == NULL){
-            printf("? invalid syntax\n\n");
+            printf("? invalid syntax \n\n");
             fflush(stdout);
             return 0;
         }
@@ -209,7 +209,7 @@ int Command(char *input,element ***A,int *pN,int *pWW,int *pWB,char *pWinner,nod
         arg3 = strtok(NULL," \n");
         if(arg1 == NULL || arg2 == NULL || arg3 == NULL)   // Player,position,and wall direction are neeeded to execute the move
         {
-            printf("? invalid syntax\n\n");
+            printf("? invalid syntax \n\n");
             fflush(stdout); 
         }
         else{
@@ -223,14 +223,14 @@ int Command(char *input,element ***A,int *pN,int *pWW,int *pWB,char *pWinner,nod
         arg1 = strtok(NULL," \n");
         if(arg1 == NULL) //might need correction
         {
-            printf("? invalid syntax\n\n");
+            printf("? invalid syntax \n\n");
             fflush(stdout);
         }
         else{
             // Generate best action(move or wall placement)                                     
             if(!genmove(*A, *pN, arg1, pWW, pWB, pWinner, history, hSize))
             {
-                printf("? genmove panicked\n\n");
+                printf("? genmove panicked \n\n");
                 fflush(stdout);
                 return 1;
             }  
@@ -239,9 +239,9 @@ int Command(char *input,element ***A,int *pN,int *pWW,int *pWB,char *pWinner,nod
 
     /* Command: winner */
     else if(strcmp(com,"winner") == 0){
-        if(*pWinner == 'B') printf("= true black\n\n");
-        else if(*pWinner == 'W') printf("= true white\n\n");
-        else printf("= false\n\n");
+        if(*pWinner == 'B') printf("= true black \n\n");
+        else if(*pWinner == 'W') printf("= true white \n\n");
+        else printf("= false \n\n");
         fflush(stdout);
     }
     else

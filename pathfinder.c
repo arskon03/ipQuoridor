@@ -25,14 +25,14 @@ int pathfinder(element **A, int N, char P, int sr, int sc){
     int **visited; // 1 if cell has already been visited, 0 if not
     visited = malloc(N * sizeof(int *));
     if(visited == NULL){
-        printf("? not enough memory!\n\n");
+        printf("? not enough memory! \n\n");
         fflush(stdout);
         return -100;
     }
     for(i = 0;i < N;i++){
         visited[i] = malloc(N * sizeof(int));
         if(visited[i] == NULL){
-            printf("? not enough memory!\n\n");
+            printf("? not enough memory! \n\n");
             fflush(stdout);
             return -100;
         }

@@ -177,7 +177,7 @@ int execute(element **A, int N, int move, int i, int j, int *pWW, int *pWB, char
 
         if(genmove)
         {
-            printf("= %C%d\n\n", v.x, v.y);
+            printf("= %C%d \n\n", v.x, v.y);
             fflush(stdout);
         } 
         playmove(A, N, player, pos, pWinner, history, hSize, 0);
@@ -224,7 +224,11 @@ int execute(element **A, int N, int move, int i, int j, int *pWW, int *pWB, char
         //printf("orientation: %s\n", orient);
         //fflush(stdout);
 
-        if(genmove) printf("= %C%d %c\n\n", v.x, v.y, o);
+        if(genmove)
+        {
+            printf("= %C%d %c \n\n", v.x, v.y, o);
+            fflush(stdout);
+        } 
         playwall(A, N, pWW, pWB, player, pos, orient, history, hSize, 0);
         free(pos);
         free(player);
