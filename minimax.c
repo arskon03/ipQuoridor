@@ -41,8 +41,6 @@ int minimax(element **A, int N, int *pWW, int *pWB, char *pWinner,int depth, int
             eval = minimax(A, N, pWW, pWB, pWinner, depth - 1, alpha, beta, 0, possiblemoves, move, history, hSize);
             if (eval == INT_MIN + 1) return INT_MIN + 1; // If panic return MIN INT
             
-           
-
             // Smaller max_eval means that a better move was found (if they are the same we keep the first move)
             if(max_eval < eval && depth == 3) // We only care about the first level of the hypothetical tree(depth == 3)
                 *move = i;
