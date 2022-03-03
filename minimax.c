@@ -17,7 +17,7 @@ int minimax(element **A, int N, int *pWW, int *pWB, char *pWinner,int depth, int
     
     // If depth has reached 0 process is over
     if(depth == 0 || *pWinner != '\0'){  // Look into winning condition
-        return evaluation(A, N);
+        return evaluation(A, N, pWinner);
     }
 
     // Process for maximizing player
@@ -101,9 +101,11 @@ int minimax(element **A, int N, int *pWW, int *pWB, char *pWinner,int depth, int
 }
 
 /* Evaluate move based on board orientation and differences to the path */
-int evaluation(element **A, int N){
+int evaluation(element **A, int N, char *pWinner){
     // Evaluating according to the path
     // path(black) > path(white) returns a positive number (white has the advantage)
     // path(black) < path(white) returns a negative number (black has the advantage)
-    return pathfinder(A, N, 'B', -1, -1) - pathfinder(A, N, 'W', -1, -1);
+    // If Winner is white, then white has a significant avantage so we multiply the positive part with 10
+    // Same if black is the wiiner but now we multiply the negative
+    return (pathfinder(A, N, 'B', -1, -1) * ((*pWinner == 'W') ? 10 : 1)) - (pathfinder(A, N, 'W', -1, -1) * ((*pWinner == 'B') ? 10 : 1));
 }

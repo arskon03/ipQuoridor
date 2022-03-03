@@ -26,12 +26,14 @@ int pathfinder(element **A, int N, char P, int sr, int sc){
     visited = malloc(N * sizeof(int *));
     if(visited == NULL){
         printf("? not enough memory!\n\n");
+        fflush(stdout);
         return -100;
     }
     for(i = 0;i < N;i++){
         visited[i] = malloc(N * sizeof(int));
         if(visited[i] == NULL){
             printf("? not enough memory!\n\n");
+            fflush(stdout);
             return -100;
         }
         for(int j = 0;j < N;j++) visited[i][j] = 0;
