@@ -1,3 +1,8 @@
+typedef struct Node{
+    char *move;
+    struct Node *nextNode;
+}node;
+
 typedef struct Vertex{
      char x;
      int y;
@@ -9,18 +14,17 @@ typedef struct Element{
     vertex V;          //values :"A3"/"B9" etc. = coordinates
 }element;
 
-void undo(int, element **A, int, int *, int *, char *);
+
+int insert_at_start(node** start, char* string);
+void remove_at_start(node** start);
+int undo(int times, element **A, int N, int *pWW, int *pWB, char *pWinner, node **history, int *hSize);
 int boardsize(element ***A, int nValue, int *pN);
-void clearboard(element **A, int N,char ***history,int *hSize);
+void clearboard(element **A, int N,node **history,int *hSize);
 void showboard(element **A, int N, int WW, int WB);
-int playmove(element **A, int N, char *player, char *pos, char *pWinner, char*** history, int* hSize);
-int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, char *orientation, char*** history, int* hSize);
-char *genmove(element **A, int N, char *player, int *pWW, int *pWB, char*** history);
-char* toLow(char* string);
-char* toUpper(char* string);
-void toVertex(int N, vertex* v, int i, int j);     // Returns 0 if failed
-void toArray(int N, vertex* v, int* i, int* j);    // Returns 0 if failed
-int abs(int n);
+int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** history, int* hSize, int print);
+int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, char *orientation, node **history, int* hSize, int print);
+int genmove(element **A, int N, char *player, int *pWW, int *pWB,char *pWinner, node **history, int *hSize);
+
 
 /*typedef struct coord{
     char x;
