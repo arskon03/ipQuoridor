@@ -44,5 +44,6 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
  * Returns 1 when failing (Panic) and 0 otherwise */
 int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** history, int* hSize, int print);
 
-/* */
+/* Generates a move with the A.I.
+ * Returns 0 when failing (Panic) and 1 otherwise */
 int genmove(element **A, int N, char *player, int *pWW, int *pWB,char *pWinner, node **history, int *hSize);

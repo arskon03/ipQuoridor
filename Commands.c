@@ -9,7 +9,10 @@
 
 int insert_at_start(node **start, char *string)
 {
+    // Store old start
     node *temp = *start;
+
+    // Create new one
     *start = malloc(sizeof(node));
     if (*start == NULL)
     {
@@ -17,6 +20,7 @@ int insert_at_start(node **start, char *string)
         return 0;
     }
 
+    // Set the string of the new node and then store the next node as the old start
     (*start)->move = string;
     (*start)->nextNode = temp;
 
@@ -25,8 +29,10 @@ int insert_at_start(node **start, char *string)
 
 void remove_at_start(node** start)
 {
+    // If there is a start
     if ((*start) != NULL)
     {
+        // Free up memory and set the new start as the next node
         node *next = (*start)->nextNode;
         free((*start)->move);
         free(*start);
@@ -132,9 +138,6 @@ void clearboard(element **A, int N, node **history, int *hSize){
             A[i][j].w_or = ' ';
         }
     }
-    // Reset the last known positions of the players
-    //find(A, N, 'W', NULL, NULL);
-    //find(A, N, 'B', NULL, NULL);
 
     // Game history = empty
     for(i = 0; i < *hSize; i++)
@@ -574,10 +577,6 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** 
     // Move the player
     A[i][j].P = p;
     A[prevI][prevJ].P = ' ';
-
-    // Update the last know position of the player
-    //int dump1, dump2;
-    //find(A, N, p, &dump1, &dump2);
 
     // If history is not passed as NULL then store the move and increament move count
     if (history != NULL)

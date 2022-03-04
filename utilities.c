@@ -8,6 +8,7 @@
 
 char* toLow(char* string)
 {
+    // Create a new string to store the lowered version of the string
     int size = strlen(string);
     char* low = malloc((sizeof(char) * size + 1));
 
@@ -26,6 +27,7 @@ char* toLow(char* string)
 
 char* toUpper(char* string)
 {
+    // Create a new string to store the capitalised version of the string
     int size = strlen(string);
     char* cap = malloc((sizeof(char) * size + 1));
 
@@ -104,6 +106,7 @@ int connected(element **A, int ar, int ac, int br, int bc){
 
 int find(element **A, int N, char P,int *r, int *c){
     
+    // Check the board to find the player
     int i,j;
     for(i = 0;i < N;i++)
         for(j = 0;j < N;j++){
@@ -114,89 +117,6 @@ int find(element **A, int N, char P,int *r, int *c){
             }
         }
     return 0; // P is invalid or player doesn't exist within A (probably won't be needed)
-    
-    
-    /*
-    // Last know positions of both white and black
-    static int iw = 0; 
-    static int jw = 0;
-    static int ib = 0;
-    static int jb = 0;
-
-    // If r or c is NULL reset the last know positions of the player
-    if(r == NULL || c == NULL)
-    {
-        iw = N-1;
-        jw = N/2; 
-        ib = 0;
-        jb = N/2;
-        return 1;
-    }
-
-    // Check if the player is on the stored spaces
-    if ((A[iw][jw].P == P) && P == 'W')
-    {
-        *r = iw;
-        *c = jw;
-        return 1;
-    }
-    else if ((A[ib][jb].P == P) && P == 'B')
-    {
-        *r = ib;
-        *c = jb;
-        return 1;
-    }
-
-    // If not, then..
-    char oP = (P == 'W') ? 'B' : 'W', vP = P;
-
-    int di[4] = {-1, +1, 0, 0}; // Direction vectors for rows
-    int dj[4] = {0, 0, +1, -1}; // Direction vectors for collumns
-    int found = 0, check = 1;
-
-    // Check the spaces around the last known position of the player, and if don't find him, then check the around the last known positions of the enemy
-    int iTemp = 0, jTemp = 0;
-    for(int ind = 0; ind < 4; ind++)
-    {
-        check = 1;
-        iTemp = ((vP == 'W') ? iw : ib) + di[ind];
-        jTemp = ((vP == 'W') ? jw : jb) + dj[ind];
-
-        // Make sure coords are inside our board
-        if (iTemp < 0 || iTemp > N - 1 || jTemp < 0 || jTemp > N - 1)
-            check = 0;
-
-        if (check)
-            if (A[iTemp][jTemp].P == vP)
-            {
-                found = 1;
-                *r = iTemp;
-                *c = jTemp;
-                break;
-            } 
-        
-        // If we haven't found the player around his last known position then check around the last known position of the opponent
-        if (vP == P && !found && ind == 3)
-        {
-            ind = 0;
-            vP = oP;
-        }
-    }
-
-    // Store new last know positions
-    if (P == 'W')
-    {
-        iw = *r;
-        jw = *c;
-    }
-    else
-    {
-        ib = *r;
-        jb = *c;
-    }
-
-    return found;
-    */
 }
 
 int max(int a, int b){
@@ -216,8 +136,6 @@ int min(int a, int b){
 int execute(element **A, int N, int move, int i, int j, int *pWW, int *pWB, char p, char *pWinner, node **history, int *hSize, int genmove){
     int dr[4] = {-1, +1, 0, 0}; // Direction vectors for rows
     int dc[4] = {0, 0, +1, -1}; // Direction vectors for collumns
-    //printf("move: %d\n",move);
-    //fflush(stdout);
 
     int isLegal = 0;
     /* First four avtions are move to one direction based on the vectors */
@@ -233,27 +151,25 @@ int execute(element **A, int N, int move, int i, int j, int *pWW, int *pWB, char
         else if (isLegal == -2)
             return -1;
         
-        //printf("After legal_move\n");
         // Create proper parameters for playmove (strings)
         vertex v;
         toVertex(N, &v, i, j);
 
         char *pos = malloc(sizeof(char)*4);
         sprintf(pos,"%c%d", v.x, v.y);
-        //printf("pos: %s\n", pos);
-        //fflush(stdout);
 
         char *player = malloc(sizeof(char)*2);
         sprintf(player,"%c", p);
-        //printf("player: %s\n", player);
-        //fflush(stdout);
 
         if(genmove)
         {
             printf("= %C%d \n\n", v.x, v.y);
             fflush(stdout);
-        } 
+        }
+        
+        // Playmove 
         playmove(A, N, player, pos, pWinner, history, hSize, 0);
+
         free(pos);
         free(player);
         return 1;
@@ -274,6 +190,7 @@ int execute(element **A, int N, int move, int i, int j, int *pWW, int *pWB, char
 
         if (!isLegal)
             return 0;
+
         // If legal_move paniced, panic
         else if (isLegal == -2)
             return -1;
@@ -284,25 +201,22 @@ int execute(element **A, int N, int move, int i, int j, int *pWW, int *pWB, char
 
         char *pos = malloc(sizeof(char)*4);
         sprintf(pos,"%c%d", v.x, v.y);
-        //printf("pos: %s\n", pos);
-        //fflush(stdout);
 
         char *player = malloc(sizeof(char)*2);
         sprintf(player,"%c", p);
-        //printf("player: %s\n", player);
-        //fflush(stdout);
 
         char *orient = malloc(sizeof(char)*2);
         sprintf(orient,"%c", o);
-        //printf("orientation: %s\n", orient);
-        //fflush(stdout);
 
         if(genmove)
         {
             printf("= %C%d %c \n\n", v.x, v.y, o);
             fflush(stdout);
         } 
+
+        // Playwall
         playwall(A, N, pWW, pWB, player, pos, orient, history, hSize, 0);
+
         free(pos);
         free(player);
         free(orient);
@@ -314,6 +228,8 @@ int legal_move(element **A, int N, int *pWW, int *pWB, char player, char type, i
 {
     char opponent;
     int i = *iptr, j = *jptr;
+
+    // Find oponent
     if (player == 'W') opponent = 'B';
     if (player == 'B') opponent = 'W';
 
@@ -408,8 +324,6 @@ int legal_move(element **A, int N, int *pWW, int *pWB, char player, char type, i
             return 0;
 
         // Make sure there isn't a wall in a closeby vertex that would block placement
-        //printf("i: %d, j: %d\n", i, j);
-        //fflush(stdout);
         char o = ' ';
         if (orient == 'H')
         {
@@ -440,6 +354,7 @@ int legal_move(element **A, int N, int *pWW, int *pWB, char player, char type, i
         // Temporarily place wall
         A[i][j].w_or = o;
         int check = 0;
+        
         // Check if wall is blocking the path of either player
         for (int ind = 0; ind < 2; ind++)
         {

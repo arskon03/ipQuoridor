@@ -183,7 +183,16 @@ int Command(char *input,element ***A,int *pN,int *pWW,int *pWB,char *pWinner,nod
             fflush(stdout);
             return 0;
         }
-        *pWW = *pWB = atoi(arg1);
+        int W = atoi(arg1);
+
+        // Check if 0 is passed as an arguement or its a failed string conversion
+        if(W == 0 && *arg1 != '0'){
+            printf("? invalid syntax \n\n");
+            fflush(stdout);
+            return 0;
+        }
+
+        *pWW = *pWB = W;
         printf("= \n\n");
         fflush(stdout);
     }
@@ -251,7 +260,7 @@ int Command(char *input,element ***A,int *pN,int *pWW,int *pWB,char *pWinner,nod
         fflush(stdout);
     }
     else{
-        printf("? unknown command\n");
+        printf("? unknown command \n\n");
         fflush(stdout);
     } 
     return 0;

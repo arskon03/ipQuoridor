@@ -96,6 +96,7 @@ void enqueue(qptr *ptr, int r, int c){
 }
 
 void dequeue(qptr *ptr){
+    // If there is a node to dequeue, change pointer value to the next node and free dequeued node
     if(*ptr != NULL){
         qptr temp = *ptr;
         *ptr = (*ptr)->next;
