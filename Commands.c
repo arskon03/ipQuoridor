@@ -189,7 +189,7 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
     v.y = atoi(pos + 1);
     // Check if position is valid
     if(v.y <= 1 || v.y > N){         // Walls cannot be placed on the last row
-        printf("? illegal move \n\n",v.y, pos);
+        printf("? illegal move \n\n");
         fflush(stdout);
         return 0;
     }
