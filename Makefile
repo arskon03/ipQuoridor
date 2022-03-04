@@ -12,7 +12,7 @@ CFLAGS = -g -ggdb3
 OBJS_FILES = main.o Commands.o pathfinder.o utilities.o minimax.o
 
 # Executable name
-EXEC = main.exe
+EXEC = ipquoridor
 
 minmax: $(OBJS_FILES)
 	$(CC) $(OBJS_FILES) -o $(EXEC)
