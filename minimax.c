@@ -5,18 +5,14 @@
 #include "pathfinder.h"
 #include "minimax.h"
 
-/* This is a minimax algorith with A-B pruning
-   Maximizing player starts as 1 (true)
-   Alpha starts as really small and beta really large */
 int minimax(element **A, int N, int *pWW, int *pWB, char *pWinner,int depth, int alpha, int beta,
-            int maximizingplayer, int possiblemoves, int *move, node **history, int *hSize) { 
+            int maximizingplayer, int possiblemoves, int *move, node **history, int *hSize, int maxDepth) { 
     int i;
-    int r,c;    // Child position
+    int r = 0, c = 0;
     int eval;   //evaluation of current move
-    //char op = (p = 'W') ? 'B' : 'W'; // op = minimizing player
     
-    // If depth has reached 0 process is over
-    if(depth == 0 || *pWinner != '\0'){  // Look into winning condition
+    // If depth has reached 0 or there is a winner return the evaluation of the current board configuration
+    if(depth == 0 || *pWinner != '\0'){
         return evaluation(A, N, pWinner);
     }
 
@@ -27,8 +23,7 @@ int minimax(element **A, int N, int *pWW, int *pWB, char *pWinner,int depth, int
         for(i = 1; i <= possiblemoves;i++){
             // Find maximizing player's position
             find(A, N, 'W', &r, &c);  // White is the maximizing player
-            //printf("depth: %d\n%d %d\n", depth, r, c);
-            //fflush(stdout);
+
             // Execute and then undo the move so the next minimax call can have the proper board configuration
             int check = execute(A, N, i, r, c, pWW, pWB, 'W', pWinner, history, hSize,0);
             
@@ -38,13 +33,11 @@ int minimax(element **A, int N, int *pWW, int *pWB, char *pWinner,int depth, int
             if (check == -2) return INT_MIN + 1; // If panic return MIN INT
 
             // Maximizingplayer = false (other player's turn)
-            eval = minimax(A, N, pWW, pWB, pWinner, depth - 1, alpha, beta, 0, possiblemoves, move, history, hSize);
+            eval = minimax(A, N, pWW, pWB, pWinner, depth - 1, alpha, beta, 0, possiblemoves, move, history, hSize, maxDepth);
             if (eval == INT_MIN + 1) return INT_MIN + 1; // If panic return MIN INT
             
-           
-
             // Smaller max_eval means that a better move was found (if they are the same we keep the first move)
-            if(max_eval < eval && depth == 3) // We only care about the first level of the hypothetical tree(depth == 3)
+            if(max_eval < eval && depth == maxDepth) // We only care about the first level of the hypothetical tree(depth == maxDepth)
                 *move = i;
 
             max_eval = max(max_eval, eval);
@@ -66,9 +59,8 @@ int minimax(element **A, int N, int *pWW, int *pWB, char *pWinner,int depth, int
         for(i = 1; i <= possiblemoves;i++){
             // Find minimizing player's position
             find(A, N, 'B', &r, &c); //Black is the minimizing player
-            //printf("depth: %d\n%d %d\n", depth, r, c);
-            //fflush(stdout);
-            // Same as above, for the second level of the tree which is the only level of the minimizing player
+
+            // Same as above
             int check = execute(A, N, i, r, c, pWW, pWB, 'B', pWinner, history, hSize, 0);
 
             // If move is illegal, try another move
@@ -77,13 +69,11 @@ int minimax(element **A, int N, int *pWW, int *pWB, char *pWinner,int depth, int
             if (check == -2) return INT_MIN + 1; // If panic return MIN INT
 
             // Maximizing player = true (other player's turn)
-            eval = minimax(A, N, pWW, pWB, pWinner, depth -1, alpha, beta, 1, possiblemoves, move, history, hSize);
+            eval = minimax(A, N, pWW, pWB, pWinner, depth -1, alpha, beta, 1, possiblemoves, move, history, hSize, maxDepth);
             if (eval == INT_MIN + 1) return INT_MIN + 1; // If panic return MIN INT
 
-            
-
             // Greater min_eval means that a better move was found (if they are the same we keep the first one)
-            if(min_eval > eval && depth == 3) // We only care about the first level of the hypothetical tree(depth == 3)
+            if(min_eval > eval && depth == maxDepth) // We only care about the first level of the hypothetical tree(depth == maxDepth)
                 *move = i;
 
             min_eval = min(min_eval, eval);
@@ -100,7 +90,6 @@ int minimax(element **A, int N, int *pWW, int *pWB, char *pWinner,int depth, int
     }
 }
 
-/* Evaluate move based on board orientation and differences to the path */
 int evaluation(element **A, int N, char *pWinner){
     // Evaluating according to the path
     // path(black) > path(white) returns a positive number (white has the advantage)

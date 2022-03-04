@@ -6,9 +6,9 @@
 #include "utilities.h"
 #include "pathfinder.h"
 
-// Convert a string to all lowercase
 char* toLow(char* string)
 {
+    // Create a new string to store the lowered version of the string
     int size = strlen(string);
     char* low = malloc((sizeof(char) * size + 1));
 
@@ -25,9 +25,9 @@ char* toLow(char* string)
     return low;
 }
 
-// Convert a string to all uppercase
 char* toUpper(char* string)
 {
+    // Create a new string to store the capitalised version of the string
     int size = strlen(string);
     char* cap = malloc((sizeof(char) * size + 1));
 
@@ -44,14 +44,12 @@ char* toUpper(char* string)
     return cap;
 }
 
-// Convert array coordinates to vertex coordinates
 void toVertex(int N, vertex* v, int i, int j)
 {
     v->x = 'A' + j;
     v->y = N - i;
 }
 
-// Convert vertex coordinates to array coordinates
 void toArray(int N, vertex* v, int* i, int* j)
 {
     *i = N - v->y;
@@ -66,8 +64,6 @@ int abs(int n)
         return n;
 }
 
-/* Checking if the cells are adjacent with no wall between them 
-   If they are, player can move from point A(ar,ac) to point B(br,bc) */
 int connected(element **A, int ar, int ac, int br, int bc){
     // Same row = horizontal neighbours
     if(ar == br){
@@ -108,8 +104,9 @@ int connected(element **A, int ar, int ac, int br, int bc){
     else return 0; // Not neighbours
 }
 
-/* Find position of given player */
 int find(element **A, int N, char P,int *r, int *c){
+    
+    // Check the board to find the player
     int i,j;
     for(i = 0;i < N;i++)
         for(j = 0;j < N;j++){
@@ -122,7 +119,6 @@ int find(element **A, int N, char P,int *r, int *c){
     return 0; // P is invalid or player doesn't exist within A (probably won't be needed)
 }
 
-/* Find tha maximum of two values */
 int max(int a, int b){
     if(a > b)
         return a;
@@ -130,7 +126,6 @@ int max(int a, int b){
         return b;
 }
 
-/* Find the minimum of two values */
 int min(int a, int b){
     if (a < b)
         return a;
@@ -138,13 +133,9 @@ int min(int a, int b){
         return b;
 }
 
-/* Interpret's and executes move based by calling the proper function 
-   The genmove variable exists to inform the function that it was called by genmove */
 int execute(element **A, int N, int move, int i, int j, int *pWW, int *pWB, char p, char *pWinner, node **history, int *hSize, int genmove){
     int dr[4] = {-1, +1, 0, 0}; // Direction vectors for rows
     int dc[4] = {0, 0, +1, -1}; // Direction vectors for collumns
-    //printf("move: %d\n",move);
-    //fflush(stdout);
 
     int isLegal = 0;
     /* First four avtions are move to one direction based on the vectors */
@@ -160,27 +151,25 @@ int execute(element **A, int N, int move, int i, int j, int *pWW, int *pWB, char
         else if (isLegal == -2)
             return -1;
         
-        //printf("After legal_move\n");
         // Create proper parameters for playmove (strings)
         vertex v;
         toVertex(N, &v, i, j);
 
         char *pos = malloc(sizeof(char)*4);
         sprintf(pos,"%c%d", v.x, v.y);
-        //printf("pos: %s\n", pos);
-        //fflush(stdout);
 
         char *player = malloc(sizeof(char)*2);
         sprintf(player,"%c", p);
-        //printf("player: %s\n", player);
-        //fflush(stdout);
 
         if(genmove)
         {
-            printf("= %C%d\n\n", v.x, v.y);
+            printf("= %C%d \n\n", v.x, v.y);
             fflush(stdout);
-        } 
+        }
+        
+        // Playmove 
         playmove(A, N, player, pos, pWinner, history, hSize, 0);
+
         free(pos);
         free(player);
         return 1;
@@ -201,6 +190,7 @@ int execute(element **A, int N, int move, int i, int j, int *pWW, int *pWB, char
 
         if (!isLegal)
             return 0;
+
         // If legal_move paniced, panic
         else if (isLegal == -2)
             return -1;
@@ -211,21 +201,22 @@ int execute(element **A, int N, int move, int i, int j, int *pWW, int *pWB, char
 
         char *pos = malloc(sizeof(char)*4);
         sprintf(pos,"%c%d", v.x, v.y);
-        //printf("pos: %s\n", pos);
-        //fflush(stdout);
 
         char *player = malloc(sizeof(char)*2);
         sprintf(player,"%c", p);
-        //printf("player: %s\n", player);
-        //fflush(stdout);
 
         char *orient = malloc(sizeof(char)*2);
         sprintf(orient,"%c", o);
-        //printf("orientation: %s\n", orient);
-        //fflush(stdout);
 
-        if(genmove) printf("= %C%d %c\n\n", v.x, v.y, o);
+        if(genmove)
+        {
+            printf("= %C%d %c \n\n", v.x, v.y, o);
+            fflush(stdout);
+        } 
+
+        // Playwall
         playwall(A, N, pWW, pWB, player, pos, orient, history, hSize, 0);
+
         free(pos);
         free(player);
         free(orient);
@@ -237,6 +228,8 @@ int legal_move(element **A, int N, int *pWW, int *pWB, char player, char type, i
 {
     char opponent;
     int i = *iptr, j = *jptr;
+
+    // Find oponent
     if (player == 'W') opponent = 'B';
     if (player == 'B') opponent = 'W';
 
@@ -331,8 +324,6 @@ int legal_move(element **A, int N, int *pWW, int *pWB, char player, char type, i
             return 0;
 
         // Make sure there isn't a wall in a closeby vertex that would block placement
-        //printf("i: %d, j: %d\n", i, j);
-        //fflush(stdout);
         char o = ' ';
         if (orient == 'H')
         {
@@ -363,6 +354,7 @@ int legal_move(element **A, int N, int *pWW, int *pWB, char player, char type, i
         // Temporarily place wall
         A[i][j].w_or = o;
         int check = 0;
+        
         // Check if wall is blocking the path of either player
         for (int ind = 0; ind < 2; ind++)
         {

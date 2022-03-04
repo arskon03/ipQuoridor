@@ -9,7 +9,10 @@
 
 int insert_at_start(node **start, char *string)
 {
+    // Store old start
     node *temp = *start;
+
+    // Create new one
     *start = malloc(sizeof(node));
     if (*start == NULL)
     {
@@ -17,6 +20,7 @@ int insert_at_start(node **start, char *string)
         return 0;
     }
 
+    // Set the string of the new node and then store the next node as the old start
     (*start)->move = string;
     (*start)->nextNode = temp;
 
@@ -25,10 +29,15 @@ int insert_at_start(node **start, char *string)
 
 void remove_at_start(node** start)
 {
-    node *next = (*start)->nextNode;
-    free((*start)->move);
-    free(*start);
-    *start = next;
+    // If there is a start
+    if ((*start) != NULL)
+    {
+        // Free up memory and set the new start as the next node
+        node *next = (*start)->nextNode;
+        free((*start)->move);
+        free(*start);
+        *start = next;
+    }
 }
 
 /* I don't know how to make this more readable, im sorry */
@@ -75,9 +84,16 @@ void showboard(element **A,int N,int WW,int WB){
             }
             fflush(stdout);
         }
-        if(i == 3) printf("black walls: %d",WB);
-        if(i == 5) printf("white walls: %d",WW);
-        fflush(stdout);
+        // Print wall numbers on the side
+        if(i == 3){
+            printf("black walls: %d",WB);
+            fflush(stdout);
+        }
+        if(i == 5){
+            printf("white walls: %d",WW);
+            fflush(stdout);
+        } 
+        
         printf("\n");
         fflush(stdout);
     }
@@ -85,7 +101,6 @@ void showboard(element **A,int N,int WW,int WB){
     fflush(stdout);
 }
 
-/* Resets the size of the board and the rest are considered arbitrary */
 int boardsize(element ***A, int nValue, int *pN){
     int i;
     // Free previous matrix
@@ -106,30 +121,24 @@ int boardsize(element ***A, int nValue, int *pN){
     return 0;
 }
 
-/* Walls cleared/Players at starting positions/Game history empty */
 void clearboard(element **A, int N, node **history, int *hSize){
     int i,j;
     // Board Configuration at the start of the game
-    for(i = 0;i < N;i++)
-    {
-        printf("i:%d\n", i);
-        for(j = 0;j < N;j++)
-        {
-            printf("j:%d\n", i);
-            if(i == 0 && j == (int)(N/2))        // Black starting position
+    for(i = 0;i < N;i++){
+        for(j = 0;j < N;j++){
+            // Players
+            if(i == 0 && j == N/2)        // Black starting position
                 A[i][j].P = 'B';
-            else if(i == N-1 && j == (int)(N/2)) // White starting position
+            else if(i == N-1 && j == N/2) // White starting position
                 A[i][j].P = 'W';
             else 
                 A[i][j].P = ' ';
             
+            // Walls
             A[i][j].w_or = ' ';
-            toVertex(N, &A[i][j].V, i, j);
-            /*A[i][j].V.x = 'A' + j;
-            A[i][j].V.y = N - i;*/
         }
     }
-        
+
     // Game history = empty
     for(i = 0; i < *hSize; i++)
     {
@@ -138,19 +147,12 @@ void clearboard(element **A, int N, node **history, int *hSize){
     *hSize = 0;
 }
 
-/* Places wall on the right position with the right orientation */
 int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, char *orientation, node **history, int* hSize, int print){
     // Make sure wall position is valid
-    /*if (strlen(pos) > 3)
-    {
-        printf("? illegal move\n\n");
-        return 0;
-    }*/
-    // Check if player is valid
     char p = 'E';
     char *playerBuff = toLow(player);
     if(playerBuff == NULL){  // Malloc fail
-        printf("? Not enough memory!\n\n");
+        printf("? Not enough memory! \n\n");
         fflush(stdout);
         return 1;
     }
@@ -159,49 +161,49 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
     else if (strcmp(playerBuff,"white") == 0 || strcmp(playerBuff,"w") == 0)
         p = 'W';
     if (p == 'E'){ // Invalid input
-        printf("? invalid syntax\n\n");
+        printf("? invalid syntax \n\n");
         fflush(stdout);
         return 0;
     }
     free(playerBuff);
+
     // Find wall position
     vertex v;
     char *temp = toUpper(pos);
     if(temp == NULL){ // Malloc failed
-        printf("? Not enough memory!\n\n");
+        printf("? Not enough memory! \n\n");
         fflush(stdout);
         return 1;
     }
     v.x = temp[0];
     free(temp);
-    char numbers[3];
     int i, j;
-    for(i = 0; i < strlen(pos) - 1; i++)
-        if(pos[i + 1] < '0' || pos[i + 1] > '9'){   // PLAYMOVE NEEDS THIS
-            printf("? invalid syntax\n\n");
+    for(i = 1; i < strlen(pos); i++)
+        if(pos[i] < '0' || pos[i] > '9'){ 
+            printf("? invalid syntax \n\n");
             fflush(stdout);
             return 0;
         }
-        else
-            numbers[i] = pos[i + 1];
-    numbers[2] = '\0';
-    v.y = atoi(numbers);
+    
+    v.y = atoi(pos + 1);
+
     // Check if position is valid
     if(v.y <= 1 || v.y > N){         // Walls cannot be placed on the last row
-        printf("? illegal move\n\n");
+        printf("? illegal move \n\n");
         fflush(stdout);
         return 0;
     }
     toArray(N, &v, &i, &j);
     if( j < 0 || j >= N-1  || A[i][j].w_or != ' '){  // Walls cannot be placed on the last collumn
-        printf("? illegal move\n\n");                // Or on top of each other
+        printf("? illegal move \n\n");               // Or on top of each other
         fflush(stdout);
         return 0;
     }
+
     //Find wall orientation
     char *orientBuff = toLow(orientation);
     if(orientBuff == NULL){ //malloc fail
-        printf("? Not enough memory!\n\n");
+        printf("? Not enough memory! \n\n");
         fflush(stdout);
         return 1;
     }
@@ -215,7 +217,7 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
         else if(A[i][j-1].w_or != 'H' && A[i][j+1].w_or != 'H')
             o = 'H';
         else{
-            printf("? illegal move\n\n");
+            printf("? illegal move \n\n");
             fflush(stdout);
             return 0;
         }
@@ -228,18 +230,20 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
         else if(A[i-1][j].w_or != 'V' && A[i+1][j].w_or != 'V')
             o = 'V';
         else{
-            printf("? illegal move\n\n");
+            printf("? illegal move \n\n");
             fflush(stdout);
             return 0;
         }
     if(o == 'E'){
-        printf("? invalid syntax\n\n");
+        printf("? invalid syntax \n\n");
         fflush(stdout);
         return 0;
     }
     free(orientBuff);
+
     // Placing wall with orientation
     A[i][j].w_or = o;
+
     // Check if wall is blocking the path of Black
     int pr,pc;
     int Path = pathfinder(A, N, 'B', -1, -1);
@@ -247,55 +251,55 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
     else if(Path == -1){
         // If path is blocked remove the wall and the move is illegal
         A[i][j].w_or = ' ';
-        printf("? illegal move\n\n");
+        printf("? illegal move \n\n");
         fflush(stdout);
         return 0;
     }
+
     // Same for white player
     Path = pathfinder(A, N, 'W', -1, -1);
     if(Path == -100) return 1; // Malloc/find failed (PANIC)
     else if(Path == -1){
         A[i][j].w_or = ' ';
-        printf("? illegal move\n\n");
+        printf("? illegal move \n\n");
         fflush(stdout);
         return 0;
     }
+
     // Removing 1 wall from said player if it exists
     if(p == 'B' && *pWB > 0)
         (*pWB)--;
     else if(p == 'W' && *pWW > 0)
         (*pWW)--; 
     if(print){
-        printf("= \n\n");
+        printf("=  \n\n");
         fflush(stdout);
     }
 
     // Adding action to game history
-    char *action = malloc(sizeof(char) * 8); // This string will hold the description of the action performed
-    vertex V;
-    toVertex(N, &V, i, j);
-    sprintf(action, "W%c%02d%c%c",V.x,V.y,o, p);
+    if (history != NULL)
+    {
+        char *action = malloc(sizeof(char) * 8); // This string will hold the description of the action performed
+        vertex V;
+        toVertex(N, &V, i, j);
+        sprintf(action, "W%c%02d%c%c",V.x,V.y,o, p);
 
-    int check = insert_at_start(history, action);
-    if (check == 0){
-        printf("? not enough memory!\n\n");
-        fflush(stdout);
-        return 1;
+        int check = insert_at_start(history, action);
+        if (check == 0){
+            printf("? not enough memory! \n\n");
+            fflush(stdout);
+            return 1;
+        }
+        ++*hSize;
     }
-    ++*hSize;
-    //printf("%s\nsize: %d\n", (*history)->move, *hSize);
-
     return 0;
 }
 
-/* Undoes last move a given number of times */
 int undo(int times, element **A, int N, int *pWW, int *pWB, char *pWinner, node **history, int *hSize){
     
-    for (int i = 0; i < times; i++)      // < hSIze?????? (<= times) yeah sry
+    for (int i = 0; i < times; i++)
     {
-        //printf("move: %s|\n", (*history)->move);
         char type = (*history)->move[0];
-        //printf("type: %c|\n", type);
 
         // Decodes the move and undoes its action one at a time
         if (type == 'M')
@@ -304,7 +308,6 @@ int undo(int times, element **A, int N, int *pWW, int *pWB, char *pWinner, node 
             int sNum, tNum;
 
             sscanf((*history)->move, "%c%c%d>%c%d%c", &type, &sLet, &sNum, &tLet, &tNum, &player);
-            //printf("yay3\n");
 
             vertex start, target;
             start.x = sLet;
@@ -318,7 +321,7 @@ int undo(int times, element **A, int N, int *pWW, int *pWB, char *pWinner, node 
 
             if(A[ti][tj].P != player)
             {
-                printf("? Didn't find player to undo\n\n");
+                printf("? Didn't find player to undo \n\n");
                 fflush(stdout);
                 return 1;
             }
@@ -327,15 +330,12 @@ int undo(int times, element **A, int N, int *pWW, int *pWB, char *pWinner, node 
             A[si][sj].P = player;
             if((player == 'W' && ti == 0) || (player == 'B' && ti == N - 1))
                 *pWinner = '\0';
-
-            //printf("yay1\n");
         }
         else  // type == 'W'
         {
             char tLet, player, orient;
             int tNum;
             sscanf((*history)->move, "%c%c%d%c%c", &type, &tLet, &tNum, &orient, &player);
-            //printf("yay5\n");
 
             vertex target;
             target.x = tLet;
@@ -346,7 +346,7 @@ int undo(int times, element **A, int N, int *pWW, int *pWB, char *pWinner, node 
 
             if(A[ti][tj].w_or != orient)
             {
-                printf("? Didn't find correct wall to undo\n\n");
+                printf("? Didn't find correct wall to undo \n\n");
                 fflush(stdout);
                 return 1;
             }
@@ -356,13 +356,9 @@ int undo(int times, element **A, int N, int *pWW, int *pWB, char *pWinner, node 
                 (*pWW)++;
             else // player == 'B'
                 (*pWB)++;
-
-            //printf("yay4\n");
         }
 
         // At the end of the loop remove the move that just got undone
-        //printf("undid: %s \n", (*history)->move);
-        //fflush(stdout);
         remove_at_start(history);
     }
     // Decrease the size of the history by times
@@ -371,20 +367,8 @@ int undo(int times, element **A, int N, int *pWW, int *pWB, char *pWinner, node 
     return 0;
 }
 
-/* Executes the given move if its legal */
 int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** history, int* hSize, int print)
 {
-    // Make sure the move is not random words
-    /*
-    if (strlen(pos) > 3)
-    {
-        printf("? illegal move\n\n");
-        return 0;
-    }
-    */
-    char *move = malloc(sizeof(char) * 10);
-
-    // Store the type of move
     char type = 'M';
     char p = 'E';
     char op = 'E';
@@ -408,7 +392,7 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** 
     // If char *player is invalid throw error
     if (p == 'E')
     {
-        printf("? invalid syntax\n\n");
+        printf("? invalid syntax \n\n");
         fflush(stdout);
         return 0;
     }
@@ -419,7 +403,7 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** 
     char *temp = toUpper(pos);
     if (temp == NULL)
     {
-        printf("? not enough memory!\n\n");
+        printf("? not enough memory! \n\n");
         fflush(stdout);
         return 1;
     }
@@ -427,32 +411,27 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** 
     v.x = temp[0];
     free(temp);
 
-    char numbers[3];
     int i, j;
-    for(i = 0; i < strlen(pos) - 1; i++){
-        if(pos[i + 1] < '0' || pos[i + 1] > '9'){   // PLAYMOVE NEEDS THIS
-            printf("? invalid syntax\n\n");
+    for(i = 1; i < strlen(pos); i++)
+        if(pos[i] < '0' || pos[i] > '9'){
+            printf("? invalid syntax \n\n");
             fflush(stdout);
             return 0;
         }
-        else
-            numbers[i] = pos[i + 1];
-    }
-
-    numbers[2] = '\0';
-    v.y = atoi(numbers);
+    
+    v.y = atoi(pos + 1);
 
     // If outside range then it is an illegal move
     if(v.y <= 0 || v.y > N)
     {
-        printf("? illegal move\n\n");
+        printf("? illegal move \n\n");
         fflush(stdout);
         return 0;
     }
     toArray(N, &v, &i, &j);
     if( j < 0 || j >= N )
     {
-        printf("? illegal move\n\n");
+        printf("? illegal move \n\n");
         fflush(stdout);
         return 0;
     }
@@ -460,7 +439,7 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** 
     // If vertex is not empty then is is an illegal move
     if(A[i][j].P != ' ')
     {
-        printf("? illegal move\n\n");
+        printf("? illegal move \n\n");
         fflush(stdout);
         return 0;
     }
@@ -479,7 +458,6 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** 
     {
         int tempI = (ind < 3) ? ( (i > 0 && ind == 1) ? vi - 1 : ( (i < N - 1) ? vi + 1 : vi) ) : vi;
         int tempJ = (ind > 2) ? ( (j > 0 && ind == 3) ? vj - 1 : ( (j < N - 1) ? vj + 1 : vj) ) : vj;
-        //printf("vi: %d, vj: %d, tempI: %d, tempJ: %d\n", vi, vj, tempI, tempJ);
 
         if ( tempI == -1 || tempJ == -1 ) 
             return 1;     //1 = panic = crash
@@ -509,22 +487,19 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** 
         ind++;
     }
     
-    //printf("prevI: %d, prevJ: %d\n", prevI, prevJ);
     // If you didn't find somewhere adjascent then it is an illegal move
     if (found == -1)
     {
-        //printf("123\n"); //problem is here
-        printf("? illegal move\n\n");
+        printf("? illegal move \n\n");
         fflush(stdout);
         return 0;
     }
     if (!connected(A, prevI, prevJ, i, j))
     {
-        printf("? illegal move\n\n");
+        printf("? illegal move \n\n");
         fflush(stdout);
         return 0;
     }
-    //printf("prevI: %d, prevJ: %d\n", prevI, prevJ);
 
     /* If you found the oponent then search the adjascent vertexes to find the player. If you cannot, then it is an illegal move. If you find him, then check the
      * vertec in the direction of the target to the opponent. if the player is not there, there, then check whether or not there is a wall or the end of the board.
@@ -552,14 +527,14 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** 
 
         if (!found)
         {
-            printf("? illegal move\n\n");
+            printf("? illegal move \n\n");
             fflush(stdout);
             return 0;
         }
 
         if (!connected(A, pI, pJ, prevI, prevJ))
         {
-            printf("? illegal move\n\n");
+            printf("? illegal move \n\n");
             fflush(stdout);
             return 0;
         }
@@ -589,7 +564,7 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** 
 
             if (!bCheck)
             {
-                printf("? illegal move\n\n");
+                printf("? illegal move \n\n");
                 fflush(stdout);
                 return 0;
             }
@@ -606,20 +581,20 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** 
     // If history is not passed as NULL then store the move and increament move count
     if (history != NULL)
     {
+        char *move = malloc(sizeof(char) * 10);
         vertex prevV;
-        toVertex(N, &prevV, prevI, prevJ); //could use A[prevI][prevJ].v
+        toVertex(N, &prevV, prevI, prevJ);
         
         sprintf(move, "%c%c%02d>%c%02d%c", type, prevV.x, prevV.y, v.x, v.y, p);
 
         int check = insert_at_start(history, move);
         if (check == 0)
         {
-            printf("? not enough memory!\n\n");
+            printf("? not enough memory! \n\n");
             fflush(stdout);
             return 1;
         }
         ++*hSize;
-        //printf("%s\nsize: %d\n", (*history)->move, *hSize);
     }
 
     // If player is white and is at the end of the board or is black and its at the start, then we have a winner
@@ -628,19 +603,19 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** 
 
     if(print)
     {
-        printf("=\n\n");
+        printf("=  \n\n");
         fflush(stdout);
     }    
     
     return 0;
 }
 
-/* Calls minimax with the apropriate parameters and executes the move minimax chooses */
 int genmove(element **A, int N, char *player, int *pWW, int *pWB, char *pWinner, node **history, int *hSize){
+    // Find player to generate move based on given string
     char p,op;
     char *playerBuff = toLow(player);
     if (playerBuff == NULL)
-        return 1; // Maloc failed (PANIC)
+        return 0; // Maloc failed (PANIC)
 
     if (strcmp(playerBuff,"black") == 0 || strcmp(playerBuff,"b") == 0)
     {
@@ -656,9 +631,9 @@ int genmove(element **A, int N, char *player, int *pWW, int *pWB, char *pWinner,
     // If char *player is invalid throw error
     if (p == 'E')
     {
-        printf("? invalid syntax\n\n");
+        printf("? invalid syntax \n\n");
         fflush(stdout);
-        return 0;
+        return 1;
     }
     free(playerBuff);
 
@@ -668,17 +643,27 @@ int genmove(element **A, int N, char *player, int *pWW, int *pWB, char *pWinner,
     find(A, N, p, &i, &j);
     int move = 1; // This variable will represent the move chosen by minimax
 
-    //printf("Before minimax\n");
+    int depth = 0;
+    if (N < 7)
+        depth = 6;
+    else if (N < 9)
+        depth = 4;
+    else if (N < 11)
+        depth = 3;
+    else if (N < 19)
+        depth = 2;
+    else 
+        depth = 1;
 
     // Call minimax to find the best move (White = maximizing player, Black = minimizing player)
     // We call the function starting with 1 or 0 for the maximizing player depending on p
-    int check = minimax(A, N, pWW, pWB, pWinner, 3, INT_MIN, INT_MAX, (p == 'W') ? 1 : 0, possiblemoves, &move, history, hSize);
+    int check = minimax(A, N, pWW, pWB, pWinner, depth, INT_MIN, INT_MAX, (p == 'W') ? 1 : 0, possiblemoves, &move, history, hSize, depth);
 
+    // If minimax panicked panik
     if(check == INT_MIN + 1)
         return 0;
         
 
-    // Interpret move and call the proper function
+    // Execute the move chosen by minimax and return
     return execute(A, N, move, i, j, pWW, pWB, p, pWinner, history, hSize, 1); // Function exists in utilities.c
 }
-
