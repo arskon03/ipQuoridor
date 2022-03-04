@@ -6,7 +6,6 @@
 #include "utilities.h"
 #include "pathfinder.h"
 
-// Convert a string to all lowercase
 char* toLow(char* string)
 {
     int size = strlen(string);
@@ -25,7 +24,6 @@ char* toLow(char* string)
     return low;
 }
 
-// Convert a string to all uppercase
 char* toUpper(char* string)
 {
     int size = strlen(string);
@@ -44,14 +42,12 @@ char* toUpper(char* string)
     return cap;
 }
 
-// Convert array coordinates to vertex coordinates
 void toVertex(int N, vertex* v, int i, int j)
 {
     v->x = 'A' + j;
     v->y = N - i;
 }
 
-// Convert vertex coordinates to array coordinates
 void toArray(int N, vertex* v, int* i, int* j)
 {
     *i = N - v->y;
@@ -66,8 +62,6 @@ int abs(int n)
         return n;
 }
 
-/* Checking if the cells are adjacent with no wall between them 
-   If they are, player can move from point A(ar,ac) to point B(br,bc) */
 int connected(element **A, int ar, int ac, int br, int bc){
     // Same row = horizontal neighbours
     if(ar == br){
@@ -108,22 +102,103 @@ int connected(element **A, int ar, int ac, int br, int bc){
     else return 0; // Not neighbours
 }
 
-/* Find position of given player */
 int find(element **A, int N, char P,int *r, int *c){
+    
     int i,j;
     for(i = 0;i < N;i++)
         for(j = 0;j < N;j++){
             if(A[i][j].P == P){ 
                 *r = i;
                 *c = j;
-                //printf("N: %d, r: %d, c: %d, player: %c \n\n", N, *r, *c, A[*r][*c].P);
                 return 1;
             }
         }
     return 0; // P is invalid or player doesn't exist within A (probably won't be needed)
+    
+    
+    /*
+    // Last know positions of both white and black
+    static int iw = 0; 
+    static int jw = 0;
+    static int ib = 0;
+    static int jb = 0;
+
+    // If r or c is NULL reset the last know positions of the player
+    if(r == NULL || c == NULL)
+    {
+        iw = N-1;
+        jw = N/2; 
+        ib = 0;
+        jb = N/2;
+        return 1;
+    }
+
+    // Check if the player is on the stored spaces
+    if ((A[iw][jw].P == P) && P == 'W')
+    {
+        *r = iw;
+        *c = jw;
+        return 1;
+    }
+    else if ((A[ib][jb].P == P) && P == 'B')
+    {
+        *r = ib;
+        *c = jb;
+        return 1;
+    }
+
+    // If not, then..
+    char oP = (P == 'W') ? 'B' : 'W', vP = P;
+
+    int di[4] = {-1, +1, 0, 0}; // Direction vectors for rows
+    int dj[4] = {0, 0, +1, -1}; // Direction vectors for collumns
+    int found = 0, check = 1;
+
+    // Check the spaces around the last known position of the player, and if don't find him, then check the around the last known positions of the enemy
+    int iTemp = 0, jTemp = 0;
+    for(int ind = 0; ind < 4; ind++)
+    {
+        check = 1;
+        iTemp = ((vP == 'W') ? iw : ib) + di[ind];
+        jTemp = ((vP == 'W') ? jw : jb) + dj[ind];
+
+        // Make sure coords are inside our board
+        if (iTemp < 0 || iTemp > N - 1 || jTemp < 0 || jTemp > N - 1)
+            check = 0;
+
+        if (check)
+            if (A[iTemp][jTemp].P == vP)
+            {
+                found = 1;
+                *r = iTemp;
+                *c = jTemp;
+                break;
+            } 
+        
+        // If we haven't found the player around his last known position then check around the last known position of the opponent
+        if (vP == P && !found && ind == 3)
+        {
+            ind = 0;
+            vP = oP;
+        }
+    }
+
+    // Store new last know positions
+    if (P == 'W')
+    {
+        iw = *r;
+        jw = *c;
+    }
+    else
+    {
+        ib = *r;
+        jb = *c;
+    }
+
+    return found;
+    */
 }
 
-/* Find tha maximum of two values */
 int max(int a, int b){
     if(a > b)
         return a;
@@ -131,7 +206,6 @@ int max(int a, int b){
         return b;
 }
 
-/* Find the minimum of two values */
 int min(int a, int b){
     if (a < b)
         return a;
@@ -139,8 +213,6 @@ int min(int a, int b){
         return b;
 }
 
-/* Interpret's and executes move based by calling the proper function 
-   The genmove variable exists to inform the function that it was called by genmove */
 int execute(element **A, int N, int move, int i, int j, int *pWW, int *pWB, char p, char *pWinner, node **history, int *hSize, int genmove){
     int dr[4] = {-1, +1, 0, 0}; // Direction vectors for rows
     int dc[4] = {0, 0, +1, -1}; // Direction vectors for collumns

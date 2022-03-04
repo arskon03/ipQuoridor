@@ -121,9 +121,9 @@ void clearboard(element **A, int N, node **history, int *hSize){
     for(i = 0;i < N;i++){
         for(j = 0;j < N;j++){
             // Players
-            if(i == 0 && j == (int)(N/2))        // Black starting position
+            if(i == 0 && j == N/2)        // Black starting position
                 A[i][j].P = 'B';
-            else if(i == N-1 && j == (int)(N/2)) // White starting position
+            else if(i == N-1 && j == N/2) // White starting position
                 A[i][j].P = 'W';
             else 
                 A[i][j].P = ' ';
@@ -132,6 +132,9 @@ void clearboard(element **A, int N, node **history, int *hSize){
             A[i][j].w_or = ' ';
         }
     }
+    // Reset the last known positions of the players
+    //find(A, N, 'W', NULL, NULL);
+    //find(A, N, 'B', NULL, NULL);
 
     // Game history = empty
     for(i = 0; i < *hSize; i++)
@@ -418,14 +421,14 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** 
     // If outside range then it is an illegal move
     if(v.y <= 0 || v.y > N)
     {
-        printf("? illegal move1 \n\n");
+        printf("? illegal move \n\n");
         fflush(stdout);
         return 0;
     }
     toArray(N, &v, &i, &j);
     if( j < 0 || j >= N )
     {
-        printf("? illegal mov2e \n\n");
+        printf("? illegal move \n\n");
         fflush(stdout);
         return 0;
     }
@@ -433,7 +436,7 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** 
     // If vertex is not empty then is is an illegal move
     if(A[i][j].P != ' ')
     {
-        printf("? illegal move3 \n\n");
+        printf("? illegal move \n\n");
         fflush(stdout);
         return 0;
     }
@@ -484,13 +487,13 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** 
     // If you didn't find somewhere adjascent then it is an illegal move
     if (found == -1)
     {
-        printf("? illegal move4 \n\n");
+        printf("? illegal move \n\n");
         fflush(stdout);
         return 0;
     }
     if (!connected(A, prevI, prevJ, i, j))
     {
-        printf("? illegal move5 \n\n");
+        printf("? illegal move \n\n");
         fflush(stdout);
         return 0;
     }
@@ -521,14 +524,14 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** 
 
         if (!found)
         {
-            printf("? illegal move6 \n\n");
+            printf("? illegal move \n\n");
             fflush(stdout);
             return 0;
         }
 
         if (!connected(A, pI, pJ, prevI, prevJ))
         {
-            printf("? illegal move7 \n\n");
+            printf("? illegal move \n\n");
             fflush(stdout);
             return 0;
         }
@@ -558,7 +561,7 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** 
 
             if (!bCheck)
             {
-                printf("? illegal move8 \n\n");
+                printf("? illegal move \n\n");
                 fflush(stdout);
                 return 0;
             }
@@ -571,6 +574,10 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** 
     // Move the player
     A[i][j].P = p;
     A[prevI][prevJ].P = ' ';
+
+    // Update the last know position of the player
+    //int dump1, dump2;
+    //find(A, N, p, &dump1, &dump2);
 
     // If history is not passed as NULL then store the move and increament move count
     if (history != NULL)
@@ -640,8 +647,10 @@ int genmove(element **A, int N, char *player, int *pWW, int *pWB, char *pWinner,
     int depth = 0;
     if (N < 7)
         depth = 6;
+    else if (N < 9)
+        depth = 4;
     else if (N < 11)
-        depth = 2;
+        depth = 3;
     else if (N < 19)
         depth = 2;
     else 
