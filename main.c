@@ -238,17 +238,13 @@ int Command(char *input,element ***A,int *pN,int *pWW,int *pWB,char *pWinner,nod
         }
         else{
             // Generate best action(move or wall placement)                                     
-            if(!genmove(*A, *pN, arg1, pWW, pWB, pWinner, history, hSize)){
-                printf("? genmove panicked \n\n");
-                fflush(stdout);
-                return 1;
-            }  
+            if(!genmove(*A, *pN, arg1, pWW, pWB, pWinner, history, hSize)) return 1;
         }
     }
 
     /* Command: winner */
     else if(strcmp(com,"winner") == 0){
-        // Check if there's a winner and print the 
+        // Check if there's a winner and print the
         if(*pWinner == 'B') printf("= true black \n\n");
         else if(*pWinner == 'W') printf("= true white \n\n");
         else printf("= false \n\n");

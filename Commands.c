@@ -271,18 +271,21 @@ int playwall(element **A, int N, int *pWW, int *pWB, char *player, char *pos, ch
     }
 
     // Adding action to game history
-    char *action = malloc(sizeof(char) * 8); // This string will hold the description of the action performed
-    vertex V;
-    toVertex(N, &V, i, j);
-    sprintf(action, "W%c%02d%c%c",V.x,V.y,o, p);
+    if (history != NULL)
+    {
+        char *action = malloc(sizeof(char) * 8); // This string will hold the description of the action performed
+        vertex V;
+        toVertex(N, &V, i, j);
+        sprintf(action, "W%c%02d%c%c",V.x,V.y,o, p);
 
-    int check = insert_at_start(history, action);
-    if (check == 0){
-        printf("? not enough memory! \n\n");
-        fflush(stdout);
-        return 1;
+        int check = insert_at_start(history, action);
+        if (check == 0){
+            printf("? not enough memory! \n\n");
+            fflush(stdout);
+            return 1;
+        }
+        ++*hSize;
     }
-    ++*hSize;
     return 0;
 }
 
@@ -360,9 +363,6 @@ int undo(int times, element **A, int N, int *pWW, int *pWB, char *pWinner, node 
 
 int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** history, int* hSize, int print)
 {
-    // Make sure the move is not random words
-    char *move = malloc(sizeof(char) * 10);   //WHAT IS DIS
-
     char type = 'M';
     char p = 'E';
     char op = 'E';
@@ -418,14 +418,14 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** 
     // If outside range then it is an illegal move
     if(v.y <= 0 || v.y > N)
     {
-        printf("? illegal move \n\n");
+        printf("? illegal move1 \n\n");
         fflush(stdout);
         return 0;
     }
     toArray(N, &v, &i, &j);
     if( j < 0 || j >= N )
     {
-        printf("? illegal move \n\n");
+        printf("? illegal mov2e \n\n");
         fflush(stdout);
         return 0;
     }
@@ -433,7 +433,7 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** 
     // If vertex is not empty then is is an illegal move
     if(A[i][j].P != ' ')
     {
-        printf("? illegal move \n\n");
+        printf("? illegal move3 \n\n");
         fflush(stdout);
         return 0;
     }
@@ -484,13 +484,13 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** 
     // If you didn't find somewhere adjascent then it is an illegal move
     if (found == -1)
     {
-        printf("? illegal move \n\n");
+        printf("? illegal move4 \n\n");
         fflush(stdout);
         return 0;
     }
     if (!connected(A, prevI, prevJ, i, j))
     {
-        printf("? illegal move \n\n");
+        printf("? illegal move5 \n\n");
         fflush(stdout);
         return 0;
     }
@@ -521,14 +521,14 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** 
 
         if (!found)
         {
-            printf("? illegal move \n\n");
+            printf("? illegal move6 \n\n");
             fflush(stdout);
             return 0;
         }
 
         if (!connected(A, pI, pJ, prevI, prevJ))
         {
-            printf("? illegal move \n\n");
+            printf("? illegal move7 \n\n");
             fflush(stdout);
             return 0;
         }
@@ -558,7 +558,7 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** 
 
             if (!bCheck)
             {
-                printf("? illegal move \n\n");
+                printf("? illegal move8 \n\n");
                 fflush(stdout);
                 return 0;
             }
@@ -573,8 +573,9 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** 
     A[prevI][prevJ].P = ' ';
 
     // If history is not passed as NULL then store the move and increament move count
-    if (history != NULL) //IS THIS NEEDED?
+    if (history != NULL)
     {
+        char *move = malloc(sizeof(char) * 10);
         vertex prevV;
         toVertex(N, &prevV, prevI, prevJ);
         
@@ -603,12 +604,12 @@ int playmove(element **A, int N, char *player, char *pos, char *pWinner, node** 
     return 0;
 }
 
-/* Calls minimax with the apropriate parameters and executes the move minimax chooses */
 int genmove(element **A, int N, char *player, int *pWW, int *pWB, char *pWinner, node **history, int *hSize){
+    // Find player to generate move based on given string
     char p,op;
     char *playerBuff = toLow(player);
     if (playerBuff == NULL)
-        return 1; // Maloc failed (PANIC)
+        return 0; // Maloc failed (PANIC)
 
     if (strcmp(playerBuff,"black") == 0 || strcmp(playerBuff,"b") == 0)
     {
@@ -626,7 +627,7 @@ int genmove(element **A, int N, char *player, int *pWW, int *pWB, char *pWinner,
     {
         printf("? invalid syntax \n\n");
         fflush(stdout);
-        return 0;
+        return 1;
     }
     free(playerBuff);
 
@@ -636,16 +637,25 @@ int genmove(element **A, int N, char *player, int *pWW, int *pWB, char *pWinner,
     find(A, N, p, &i, &j);
     int move = 1; // This variable will represent the move chosen by minimax
 
-    //printf("Before minimax\n");
+    int depth = 0;
+    if (N < 7)
+        depth = 6;
+    else if (N < 11)
+        depth = 2;
+    else if (N < 19)
+        depth = 2;
+    else 
+        depth = 1;
 
     // Call minimax to find the best move (White = maximizing player, Black = minimizing player)
     // We call the function starting with 1 or 0 for the maximizing player depending on p
-    int check = minimax(A, N, pWW, pWB, pWinner, 3, INT_MIN, INT_MAX, (p == 'W') ? 1 : 0, possiblemoves, &move, history, hSize);
+    int check = minimax(A, N, pWW, pWB, pWinner, depth, INT_MIN, INT_MAX, (p == 'W') ? 1 : 0, possiblemoves, &move, history, hSize, depth);
 
+    // If minimax panicked panik
     if(check == INT_MIN + 1)
         return 0;
         
 
-    // Interpret move and call the proper function
+    // Execute the move chosen by minimax and return
     return execute(A, N, move, i, j, pWW, pWB, p, pWinner, history, hSize, 1); // Function exists in utilities.c
 }

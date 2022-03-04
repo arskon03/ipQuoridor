@@ -116,6 +116,7 @@ int find(element **A, int N, char P,int *r, int *c){
             if(A[i][j].P == P){ 
                 *r = i;
                 *c = j;
+                //printf("N: %d, r: %d, c: %d, player: %c \n\n", N, *r, *c, A[*r][*c].P);
                 return 1;
             }
         }
