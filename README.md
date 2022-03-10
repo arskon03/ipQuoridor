@@ -56,10 +56,15 @@ By default quoridor is played on a 9x9 game board and each player starts with 10
 
   List all commands
 
-*Disclaimers*:
- This project was a bit rushed because of the deadline of the assignement.
- A lot of changes could have been made in order to organize the poject better. For example some functions could have been more modular, other modifications could have made the program faster, and more economic in terms of memory etc.
- Despite all these the two of us did our best given the short time we had and the fact that this was our first project of this magnitude.
+
+* *AI engine*:
+  The AI engine uses minimax with A-B pruning and the depth is dependent on the current boardsize. The engine checks and executes the given move and undoes it before moving to the next branch of this depth level. When the depth reaches zero the engine evaluates the current boardsize by evaluating both players shortest paths to their equivalent winning row. The egnine considere's positive evaluations to benefit white player and negative evaluations to benefit black.
+
+
+* *Disclaimers*:
+  This project was a bit rushed because of the deadline of the assignement.
+  A lot of changes could have been made in order to organize the poject better. For example some functions could have been more modular, other modifications could have made the program faster, and more economic in terms of memory, the evaluation of the AI engine could check more parameters for better results and the engine itself could simulate themoves instead of executing them and continually checking if they are legal.
+  Despite all these the two of us did our best given the short time we had and the fact that this was our first project of this magnitude.
 
 Assignment 4, Semester 1, Department of Informatics and Telecommunications - UoA (2022)
 Project made by Argirios Lazaridis (sdi2100083) and Konstantinos Dimitropoulos (sdi2100033)
